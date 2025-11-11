@@ -37,7 +37,7 @@ class TradingSettings:
     """Configuration for trading system"""
     # ML settings
     neighbors_count: int = 5
-    max_bars_back: int = 2000
+    max_bars_back: int = 5000
     feature_count: int = 5
     
     # Kernel settings

@@ -23,7 +23,7 @@ class BacktestConfig:
     lookback_bars: int = 3000
     
     neighbors_count: int = 5
-    max_bars_back: int = 2000
+    max_bars_back: int = 3000
     use_kernel_filter: bool = True
     use_volatility_filter: bool = True
     use_regime_filter: bool = True
@@ -317,7 +317,7 @@ class MasterBacktester:
         self.current_trade = Trade(
             entry_bar=bar,
             entry_time=self.data.loc[bar, 'timestamp'],
-            entry_price=entry_price,
+            entry_price=entry_price,#self.data.loc[bar, 'open'],
             direction=direction
         )
     
