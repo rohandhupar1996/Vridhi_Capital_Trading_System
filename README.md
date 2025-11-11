@@ -1,0 +1,1 @@
+# Vridhi_Capital_Trading_System
