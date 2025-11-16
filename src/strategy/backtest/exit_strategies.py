@@ -67,14 +67,23 @@ class ExitStrategyManager:
         if config.exit_mode in ['volume', 'hybrid']:
             # Import here to avoid circular dependency
             try:
-                from core.volume_nodes import VolumeNodeDetector
+                from strategy.core.volume_nodes import VolumeNodeDetector
+            except ImportError:
+                try:
+                    from core.volume_nodes import VolumeNodeDetector  # legacy support
+                except ImportError:
+                    print("⚠️  Warning: VolumeNodeDetector not available")
+                    self.volume_detector = None
+                else:
+                    self.volume_detector = VolumeNodeDetector(
+                        lookback=config.volume_lookback,
+                        num_rows=config.volume_num_rows
+                    )
+            else:
                 self.volume_detector = VolumeNodeDetector(
                     lookback=config.volume_lookback,
                     num_rows=config.volume_num_rows
                 )
-            except ImportError:
-                print("⚠️  Warning: VolumeNodeDetector not available")
-                self.volume_detector = None
     
     def check_exit(self, trade: Trade, data: MarketData, 
                    repaint_detector=None) -> Tuple[bool, str]:
@@ -196,7 +205,7 @@ class ExitStrategyManager:
 # ==== TESTING ====
 
 if __name__ == "__main__":
-    from config import BacktestConfig, get_config_dual_tf_complete
+    from strategy.backtest.config import BacktestConfig, get_config_dual_tf_complete
     
     print("\n" + "="*70)
     print("TESTING EXIT STRATEGY MANAGER")

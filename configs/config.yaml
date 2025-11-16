@@ -1,0 +1,58 @@
+# Trading Configuration
+trading:
+  symbol: "BANKNIFTY"
+  exchange: "NSE"
+  timeframes:
+    primary: "5min"
+    secondary: "15min"
+    filter: "1hour"
+  lookback_bars: 2000
+  
+# Signal Settings
+signals:
+  ml_neighbors: 8
+  feature_count: 5
+  use_kernel_filter: true
+  min_confidence: 4  # Minimum prediction strength
+  
+# Volume Node Settings
+volume:
+  lookback_period: 200
+  volume_threshold: 1.5  # Multiple of average
+  
+# Exit Settings
+exits:
+  use_volume_nodes: true
+  default_target_pct: 2.0
+  default_stop_pct: 1.5
+  max_bars_held: 10
+  
+# Risk Management
+risk:
+  position_size: 15  # Lots
+  max_positions: 1
+  daily_loss_limit: 5000  # INR
+  
+# Contract Rollover
+rollover:
+  auto_rollover: true
+  days_before_expiry: 3
+
+# Order Management System (OMS)
+oms:
+  lot_size: 8  # Number of BankNifty lots (configurable)
+  hedge_legs: 20  # Number of legs away for margin hedge (20 = 2000 points)
+  order_type: "MARKET"  # Always MARKET orders
+  product_type: "NRML"  # NRML for options
+  execution_sequence: "BUY_FIRST"  # BUY orders first, then SELL
+  allow_partial_sell: true  # Allow partial fills on SELL side if margin issues
+  fast_execution: true  # Use pre-calculated margins for fast execution
+  margin_check_before_trade: true  # Check margin before placing orders
+  sequential_lot_reduction: true  # Reduce lot size if margin issues occur
+  exit_all_legs_together: true  # Exit all legs simultaneously
+
+# Earnings Season Filter
+earnings_filter:
+  use_filter: true
+  block_first_days_blue: 15
+  block_after_yellow: 15

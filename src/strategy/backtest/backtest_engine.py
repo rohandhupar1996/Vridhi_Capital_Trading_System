@@ -317,7 +317,7 @@ class MasterBacktester:
         self.current_trade = Trade(
             entry_bar=bar,
             entry_time=self.data.loc[bar, 'timestamp'],
-            entry_price=entry_price,#self.data.loc[bar, 'open'],
+            entry_price=entry_price,#self.data.loc[bar, 'close'],
             direction=direction
         )
     

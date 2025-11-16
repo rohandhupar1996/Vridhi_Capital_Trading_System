@@ -6,7 +6,8 @@ All backtest metrics in one place
 import numpy as np
 import pandas as pd
 from typing import Dict, List
-from exit_strategies import Trade
+
+from .exit_strategies import Trade
 
 
 class MetricsCalculator:
@@ -148,22 +149,20 @@ class MetricsCalculator:
         return max_dd
     
     @staticmethod
-    def _calculate_sharpe(returns: np.ndarray, risk_free_rate: float = 0.0) -> float:
+    def _calculate_sharpe(returns: np.ndarray, risk_free_rate: float = 0.0, trades_per_day: float = 1.0) -> float:
         """Calculate Sharpe ratio"""
         if len(returns) == 0:
             return 0.0
-        
+
         mean_return = np.mean(returns)
         std_return = np.std(returns)
-        
+
         if std_return == 0:
             return 0.0
-        
-        # Annualize (assuming ~252 trading days, ~17 trades/day for 15min)
+
         sharpe = (mean_return - risk_free_rate) / std_return
-        sharpe_annualized = sharpe * np.sqrt(252 * 17)
-        
-        return sharpe_annualized
+        annualization_factor = np.sqrt(252 * trades_per_day)
+        return sharpe * annualization_factor
     
     @staticmethod
     def _calculate_mfe_mae_metrics(trades_df: pd.DataFrame) -> Dict:
