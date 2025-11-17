@@ -50,3 +50,4 @@
 2025-11-17 01:40:41 | INFO     | Candle-close switch to final signal | from_side=NONE | to_side=LONG | candle_id=1970-01-01 00:00:01_15min
 2025-11-17 01:42:44 | INFO     | Candle-close switch to final signal | from_side=NONE | to_side=SHORT | candle_id=1970-01-01 00:00:01_15min
 2025-11-17 01:44:47 | INFO     | Candle-close switch to final signal | from_side=NONE | to_side=LONG | candle_id=1970-01-01 00:00:01_15min
+2025-11-17 01:46:49 | INFO     | Candle-close switch to final signal | from_side=NONE | to_side=SHORT | candle_id=1970-01-01 00:00:01_15min

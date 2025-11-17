@@ -50,3 +50,4 @@
 2025-11-17 01:40:42 | INFO     | Sim candle processed | candle_time=1970-01-01T00:00:01.735895 | tf=15min | signal=LONG | futures_price=51330.2
 2025-11-17 01:42:45 | INFO     | Sim candle processed | candle_time=1970-01-01T00:00:01.735896 | tf=15min | signal=SHORT | futures_price=51238.4
 2025-11-17 01:44:48 | INFO     | Sim candle processed | candle_time=1970-01-01T00:00:01.735897 | tf=15min | signal=LONG | futures_price=51246.0
+2025-11-17 01:46:50 | INFO     | Sim candle processed | candle_time=1970-01-01T00:00:01.736135 | tf=15min | signal=SHORT | futures_price=50987.0

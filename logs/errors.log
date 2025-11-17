@@ -12073,3 +12073,235 @@ Traceback (most recent call last):
   File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 937, in _request
     raise exp(data["message"], code=r.status_code)
 kiteconnect.exceptions.TokenException: Incorrect `api_key` or `access_token`.
+2025-11-17 01:46:48 | ERROR    | Failed to place order: BANKNIFTY51000PE | error=Incorrect `api_key` or `access_token`.
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 743, in _place_market_order
+    order_id=fake_id,
+           ^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 361, in place_order
+    return self._post("order.place",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 865, in _post
+    return self._request(route, "POST", url_args=url_args, params=params, is_json=is_json, query_params=query_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.TokenException: Incorrect `api_key` or `access_token`.
+2025-11-17 01:46:48 | ERROR    | Failed to place order for BANKNIFTY51000PE
+2025-11-17 01:46:48 | ERROR    | Error exiting partial positions: Incorrect `api_key` or `access_token`.
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 822, in _exit_partial_positions
+    return 0, 0.0
+                  
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 445, in positions
+    return self._get("portfolio.positions")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 861, in _get
+    return self._request(route, "GET", url_args=url_args, params=params, is_json=is_json)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.TokenException: Incorrect `api_key` or `access_token`.
+2025-11-17 01:46:49 | ERROR    | Failed to place order: BANKNIFTY51000PE | error=Incorrect `api_key` or `access_token`.
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 743, in _place_market_order
+    order_id=fake_id,
+           ^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 361, in place_order
+    return self._post("order.place",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 865, in _post
+    return self._request(route, "POST", url_args=url_args, params=params, is_json=is_json, query_params=query_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.TokenException: Incorrect `api_key` or `access_token`.
+2025-11-17 01:46:49 | ERROR    | Failed to place order for BANKNIFTY51000PE
+2025-11-17 01:46:49 | ERROR    | Error exiting partial positions: Incorrect `api_key` or `access_token`.
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 822, in _exit_partial_positions
+    return 0, 0.0
+                  
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 445, in positions
+    return self._get("portfolio.positions")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 861, in _get
+    return self._request(route, "GET", url_args=url_args, params=params, is_json=is_json)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.TokenException: Incorrect `api_key` or `access_token`.
+2025-11-17 01:46:49 | ERROR    | Failed to place order: BANKNIFTY51000PE | error=Incorrect `api_key` or `access_token`.
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 743, in _place_market_order
+    order_id=fake_id,
+           ^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 361, in place_order
+    return self._post("order.place",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 865, in _post
+    return self._request(route, "POST", url_args=url_args, params=params, is_json=is_json, query_params=query_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.TokenException: Incorrect `api_key` or `access_token`.
+2025-11-17 01:46:49 | ERROR    | Failed to place order for BANKNIFTY51000PE
+2025-11-17 01:46:49 | ERROR    | Error exiting partial positions: Incorrect `api_key` or `access_token`.
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 822, in _exit_partial_positions
+    return 0, 0.0
+                  
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 445, in positions
+    return self._get("portfolio.positions")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 861, in _get
+    return self._request(route, "GET", url_args=url_args, params=params, is_json=is_json)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.TokenException: Incorrect `api_key` or `access_token`.
+2025-11-17 01:46:49 | ERROR    | Failed to place order: BANKNIFTY51000PE | error=Incorrect `api_key` or `access_token`.
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 743, in _place_market_order
+    order_id=fake_id,
+           ^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 361, in place_order
+    return self._post("order.place",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 865, in _post
+    return self._request(route, "POST", url_args=url_args, params=params, is_json=is_json, query_params=query_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.TokenException: Incorrect `api_key` or `access_token`.
+2025-11-17 01:46:49 | ERROR    | Failed to place order for BANKNIFTY51000PE
+2025-11-17 01:46:49 | ERROR    | Error exiting partial positions: Incorrect `api_key` or `access_token`.
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 822, in _exit_partial_positions
+    return 0, 0.0
+                  
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 445, in positions
+    return self._get("portfolio.positions")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 861, in _get
+    return self._request(route, "GET", url_args=url_args, params=params, is_json=is_json)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.TokenException: Incorrect `api_key` or `access_token`.
+2025-11-17 01:46:49 | ERROR    | Failed to place order: BANKNIFTY51000PE | error=Incorrect `api_key` or `access_token`.
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 743, in _place_market_order
+    order_id=fake_id,
+           ^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 361, in place_order
+    return self._post("order.place",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 865, in _post
+    return self._request(route, "POST", url_args=url_args, params=params, is_json=is_json, query_params=query_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.TokenException: Incorrect `api_key` or `access_token`.
+2025-11-17 01:46:49 | ERROR    | Failed to place order for BANKNIFTY51000PE
+2025-11-17 01:46:50 | ERROR    | Error exiting partial positions: Incorrect `api_key` or `access_token`.
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 822, in _exit_partial_positions
+    return 0, 0.0
+                  
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 445, in positions
+    return self._get("portfolio.positions")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 861, in _get
+    return self._request(route, "GET", url_args=url_args, params=params, is_json=is_json)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.TokenException: Incorrect `api_key` or `access_token`.
+2025-11-17 01:46:50 | ERROR    | Failed to place order: BANKNIFTY51000PE | error=Incorrect `api_key` or `access_token`.
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 743, in _place_market_order
+    order_id=fake_id,
+           ^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 361, in place_order
+    return self._post("order.place",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 865, in _post
+    return self._request(route, "POST", url_args=url_args, params=params, is_json=is_json, query_params=query_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.TokenException: Incorrect `api_key` or `access_token`.
+2025-11-17 01:46:50 | ERROR    | Failed to place order for BANKNIFTY51000PE
+2025-11-17 01:46:50 | ERROR    | Error exiting partial positions: Incorrect `api_key` or `access_token`.
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 822, in _exit_partial_positions
+    return 0, 0.0
+                  
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 445, in positions
+    return self._get("portfolio.positions")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 861, in _get
+    return self._request(route, "GET", url_args=url_args, params=params, is_json=is_json)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.TokenException: Incorrect `api_key` or `access_token`.
+2025-11-17 01:46:50 | ERROR    | Failed to place order: BANKNIFTY51000PE | error=Incorrect `api_key` or `access_token`.
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 743, in _place_market_order
+    order_id=fake_id,
+           ^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 361, in place_order
+    return self._post("order.place",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 865, in _post
+    return self._request(route, "POST", url_args=url_args, params=params, is_json=is_json, query_params=query_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.TokenException: Incorrect `api_key` or `access_token`.
+2025-11-17 01:46:50 | ERROR    | Failed to place order for BANKNIFTY51000PE
+2025-11-17 01:46:50 | ERROR    | Error exiting partial positions: Incorrect `api_key` or `access_token`.
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 822, in _exit_partial_positions
+    return 0, 0.0
+                  
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 445, in positions
+    return self._get("portfolio.positions")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 861, in _get
+    return self._request(route, "GET", url_args=url_args, params=params, is_json=is_json)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.TokenException: Incorrect `api_key` or `access_token`.
+2025-11-17 01:46:50 | ERROR    | Failed to place order: BANKNIFTY51000PE | error=Incorrect `api_key` or `access_token`.
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 743, in _place_market_order
+    order_id=fake_id,
+           ^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 361, in place_order
+    return self._post("order.place",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 865, in _post
+    return self._request(route, "POST", url_args=url_args, params=params, is_json=is_json, query_params=query_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.TokenException: Incorrect `api_key` or `access_token`.
+2025-11-17 01:46:50 | ERROR    | Failed to place order for BANKNIFTY51000PE
+2025-11-17 01:46:50 | ERROR    | Error exiting partial positions: Incorrect `api_key` or `access_token`.
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 822, in _exit_partial_positions
+    return 0, 0.0
+                  
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 445, in positions
+    return self._get("portfolio.positions")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 861, in _get
+    return self._request(route, "GET", url_args=url_args, params=params, is_json=is_json)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.TokenException: Incorrect `api_key` or `access_token`.
