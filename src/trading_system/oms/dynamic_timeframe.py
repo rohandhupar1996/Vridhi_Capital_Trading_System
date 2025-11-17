@@ -64,21 +64,21 @@ class DynamicTimeframeController:
 
     def _get_actual_expiry_date(self, dt: datetime) -> Optional[date]:
         """
-        Get actual expiry date from Zerodha instruments for current month.
+        Get actual current expiry date from Zerodha instruments dynamically.
+        Gets the nearest (current) expiry, not just current month - handles expiry transitions.
         Returns None if not available, falls back to calculated last Thursday.
         """
         if not self.kite:
             return None
         
         try:
+            from datetime import date
             # Get all BankNifty options from Zerodha
             instruments = self.kite.instruments("NFO")
             
-            # Filter for BankNifty options (CE or PE) for current month
-            current_month = dt.month
-            current_year = dt.year
+            # Find all active (non-expired) expiry dates for BankNifty options
+            today = dt.date()
             
-            # Find all unique expiry dates for BankNifty options
             expiry_dates = set()
             for inst in instruments:
                 if (inst.get('name') == 'BANKNIFTY' and 
@@ -86,18 +86,31 @@ class DynamicTimeframeController:
                     expiry = inst.get('expiry')
                     if expiry:
                         try:
-                            exp_date = datetime.strptime(expiry, '%Y-%m-%d').date()
-                            # Check if it's in current month
-                            if exp_date.month == current_month and exp_date.year == current_year:
+                            # Handle different expiry formats
+                            if isinstance(expiry, str):
+                                exp_date = datetime.strptime(expiry, '%Y-%m-%d').date()
+                            elif isinstance(expiry, datetime):
+                                exp_date = expiry.date()
+                            elif isinstance(expiry, date):
+                                exp_date = expiry
+                            else:
+                                continue
+                            
+                            # Only include non-expired contracts
+                            if exp_date >= today:
                                 expiry_dates.add(exp_date)
                         except (ValueError, TypeError):
                             continue
             
             if expiry_dates:
-                # Get the latest expiry date (should be the monthly expiry)
-                latest_expiry = max(expiry_dates)
-                self.logger.info(f"Found actual expiry from Zerodha: {latest_expiry}")
-                return latest_expiry
+                # Get the nearest (earliest) expiry date (current expiry contract)
+                nearest_expiry = min(expiry_dates)
+                self.logger.info(
+                    f"Found current expiry from Zerodha: {nearest_expiry}",
+                    expiry_date=nearest_expiry.isoformat(),
+                    days_until_expiry=(nearest_expiry - today).days
+                )
+                return nearest_expiry
             
         except Exception as e:
             self.logger.warning(f"Error getting expiry from Zerodha: {e}")

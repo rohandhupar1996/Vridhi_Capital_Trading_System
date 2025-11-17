@@ -4,6 +4,7 @@ Handles entry, exit, SL with margin management and sequential lot reduction
 """
 
 import time
+from pathlib import Path
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Dict, List, Optional, Tuple
@@ -12,6 +13,8 @@ from dataclasses import dataclass, field
 from ..logging import ComponentLogger
 from .margin_calculator import MarginCalculator
 from .rate_limiter import get_rate_limiter, EndpointType
+from .option_contract_logger import OptionContractLogger
+from .option_chain_manager import OptionChainManager
 
 
 class OrderStatus(Enum):
@@ -83,8 +86,10 @@ class OrderManager:
         self.logger = logger or ComponentLogger.get_logger("order_manager")
         self.dry_run = dry_run
         
-        # Margin calculator
+        # Margin calculator (pass option chain manager for correct symbols)
         self.margin_calc = MarginCalculator(kite, self.logger)
+        # Note: option_chain_manager will be set after initialization
+        self.margin_calc.option_chain_manager = None  # Will be set below
         
         # Position tracking
         self.position = Position()
@@ -100,81 +105,121 @@ class OrderManager:
         # Pre-calculated margins (for fast execution)
         self._pre_calculated_margins: Optional[Dict] = None
         
+        # Option contract logger for JSON audit trail
+        # Calculate project root: src/trading_system/oms -> project root
+        project_root = Path(__file__).resolve().parents[3]
+        self.contract_logger = OptionContractLogger(
+            log_file=project_root / "logs" / "option_contracts.json",
+            logger=ComponentLogger.get_logger("option_contract_logger")
+        )
+        
+        # Option chain manager (cached option chain for fast lookups)
+        self.option_chain_manager = OptionChainManager(
+            kite=kite,
+            logger=ComponentLogger.get_logger("option_chain_manager"),
+            auto_refresh=True
+        )
+        
+        # Update margin calculator with option chain manager
+        self.margin_calc.option_chain_manager = self.option_chain_manager
+        
+        # Log option chain summary
+        chain_summary = self.option_chain_manager.get_contracts_summary()
         self.logger.info(
             f"OMS initialized",
             lot_size=lot_size,
             hedge_legs=hedge_legs,
-            futures_symbol=self.futures_symbol
+            futures_symbol=self.futures_symbol,
+            option_chain_expiry=chain_summary.get('expiry'),
+            option_chain_contracts=chain_summary.get('total_contracts'),
+            option_chain_strikes=chain_summary.get('strikes')
         )
     
     def _get_current_futures_symbol(self) -> str:
-        """Get current month BankNifty futures symbol"""
-        now = datetime.now()
-        month_map = {
-            1: 'JAN', 2: 'FEB', 3: 'MAR', 4: 'APR',
-            5: 'MAY', 6: 'JUN', 7: 'JUL', 8: 'AUG',
-            9: 'SEP', 10: 'OCT', 11: 'NOV', 12: 'DEC'
-        }
-        
-        year_suffix = str(now.year)[2:]
-        month = month_map[now.month]
-        
-        symbol = f"BANKNIFTY{year_suffix}{month}FUT"
-        return symbol
-    
-    def _get_option_expiry_date(self) -> Optional[str]:
-        """
-        Get current month BankNifty option expiry date from Zerodha instruments
-        Returns format: DDMMM (e.g., 25NOV) or None if not found
-        """
+        """Get current month BankNifty futures symbol dynamically from Zerodha"""
         try:
-            # Get all BankNifty options from Zerodha
-            instruments = self.kite.instruments("NFO")
+            from ..data.zerodha_futures_utils import get_current_month_futures_symbol_and_token
             
-            # Filter for BankNifty options (CE or PE) for current month
+            if self.kite:
+                symbol, _ = get_current_month_futures_symbol_and_token(self.kite)
+                if symbol:
+                    self.logger.info(f"Fetched futures symbol dynamically: {symbol}")
+                    return symbol
+            
+            # Fallback to calculated symbol if API fails
             now = datetime.now()
-            current_month = now.month
-            current_year = now.year
-            
-            # Find all unique expiry dates for BankNifty options
-            expiry_dates = set()
-            for inst in instruments:
-                if (inst.get('name') == 'BANKNIFTY' and 
-                    inst.get('instrument_type') in ['CE', 'PE']):
-                    expiry = inst.get('expiry')
-                    if expiry:
-                        # Parse expiry date
-                        try:
-                            exp_date = datetime.strptime(expiry, '%Y-%m-%d')
-                            # Check if it's in current month
-                            if exp_date.month == current_month and exp_date.year == current_year:
-                                expiry_dates.add(exp_date)
-                        except (ValueError, TypeError):
-                            continue
-            
-            if not expiry_dates:
-                # Fallback to calculated last Thursday
-                self.logger.warning("No expiry found in instruments, using calculated last Thursday")
-                return self._calculate_last_thursday()
-            
-            # Get the latest expiry date (should be the monthly expiry)
-            latest_expiry = max(expiry_dates)
-            
             month_map = {
                 1: 'JAN', 2: 'FEB', 3: 'MAR', 4: 'APR',
                 5: 'MAY', 6: 'JUN', 7: 'JUL', 8: 'AUG',
                 9: 'SEP', 10: 'OCT', 11: 'NOV', 12: 'DEC'
             }
             
-            day = str(latest_expiry.day).zfill(2)
-            month = month_map[latest_expiry.month]
+            year_suffix = str(now.year)[2:]
+            month = month_map[now.month]
             
-            expiry_str = f"{day}{month}"
-            self.logger.info(f"Found option expiry from Zerodha: {expiry_str} ({latest_expiry.date()})")
-            return expiry_str
+            symbol = f"BANKNIFTY{year_suffix}{month}FUT"
+            self.logger.warning(f"Using fallback calculated symbol: {symbol}")
+            return symbol
+        except Exception as e:
+            self.logger.error(f"Error fetching futures symbol: {e}", exc_info=True)
+            # Fallback
+            now = datetime.now()
+            month_map = {
+                1: 'JAN', 2: 'FEB', 3: 'MAR', 4: 'APR',
+                5: 'MAY', 6: 'JUN', 7: 'JUL', 8: 'AUG',
+                9: 'SEP', 10: 'OCT', 11: 'NOV', 12: 'DEC'
+            }
+            year_suffix = str(now.year)[2:]
+            month = month_map[now.month]
+            return f"BANKNIFTY{year_suffix}{month}FUT"
+    
+    def _get_option_expiry_date(self) -> Optional[str]:
+        """
+        Get current expiry BankNifty option expiry date.
+        Uses cached option chain manager for fast lookup (no API call).
+        Returns format: DDMMM (e.g., 25NOV) or None if not found
+        """
+        try:
+            # Use option chain manager (already cached, no API call)
+            expiry_date = self.option_chain_manager.get_current_expiry()
+            
+            if expiry_date:
+                month_map = {
+                    1: 'JAN', 2: 'FEB', 3: 'MAR', 4: 'APR',
+                    5: 'MAY', 6: 'JUN', 7: 'JUL', 8: 'AUG',
+                    9: 'SEP', 10: 'OCT', 11: 'NOV', 12: 'DEC'
+                }
+                
+                day = str(expiry_date.day).zfill(2)
+                month = month_map[expiry_date.month]
+                expiry_str = f"{day}{month}"
+                
+                self.logger.debug(
+                    f"Got expiry from option chain manager: {expiry_str}",
+                    expiry_date=expiry_date.isoformat()
+                )
+                return expiry_str
+            
+            # Fallback: refresh chain manager and try again
+            self.logger.warning("Option chain manager has no expiry, refreshing...")
+            if self.option_chain_manager.refresh_option_chain():
+                expiry_date = self.option_chain_manager.get_current_expiry()
+                if expiry_date:
+                    month_map = {
+                        1: 'JAN', 2: 'FEB', 3: 'MAR', 4: 'APR',
+                        5: 'MAY', 6: 'JUN', 7: 'JUL', 8: 'AUG',
+                        9: 'SEP', 10: 'OCT', 11: 'NOV', 12: 'DEC'
+                    }
+                    day = str(expiry_date.day).zfill(2)
+                    month = month_map[expiry_date.month]
+                    return f"{day}{month}"
+            
+            # Last resort: calculated last Thursday
+            self.logger.warning("Using calculated last Thursday as fallback")
+            return self._calculate_last_thursday()
             
         except Exception as e:
-            self.logger.error(f"Error getting expiry from Zerodha: {e}", exc_info=True)
+            self.logger.error(f"Error getting expiry: {e}", exc_info=True)
             # Fallback to calculated last Thursday
             return self._calculate_last_thursday()
     
@@ -205,7 +250,8 @@ class OrderManager:
     
     def _get_option_symbol(self, strike: int, option_type: str) -> Optional[str]:
         """
-        Get correct option symbol with expiry date from Zerodha instruments
+        Get correct option symbol using cached option chain manager.
+        Fast O(1) lookup with automatic expiry handling.
         
         Args:
             strike: Strike price (e.g., 59000)
@@ -215,80 +261,42 @@ class OrderManager:
             Trading symbol (e.g., 'BANKNIFTY25NOV59000CE') or None if not found
         """
         try:
-            # Get expiry date
-            expiry = self._get_option_expiry_date()
+            # Use option chain manager for fast cached lookup
+            symbol = self.option_chain_manager.get_option_symbol(strike, option_type)
             
-            # Try to find instrument from Zerodha
-            instruments = self.kite.instruments("NFO")
-            
-            # Search for matching option
-            # Zerodha format: BANKNIFTY{DD}{MMM}{YY}{STRIKE}{CE/PE}
-            # Example: BANKNIFTY27NOV2559000CE (27 Nov 2025, strike 59000, CE)
-            year_suffix = str(datetime.now().year)[2:]
-            
-            # First, try to find by matching strike and option type, then check expiry
-            matching_instruments = []
-            for inst in instruments:
-                if (inst.get('name') == 'BANKNIFTY' and 
-                    inst.get('instrument_type') == option_type and
-                    inst.get('strike') == float(strike)):
-                    matching_instruments.append(inst)
-            
-            # Filter by expiry date (should match our calculated expiry)
-            for inst in matching_instruments:
-                tradingsymbol = inst.get('tradingsymbol', '')
-                # Check if expiry string is in the symbol
-                if expiry in tradingsymbol:
-                    self.logger.info(
-                        f"Found option symbol: {tradingsymbol}",
-                        strike=strike,
-                        option_type=option_type,
-                        expiry_date=inst.get('expiry')
-                    )
-                    return tradingsymbol
-            
-            # If no exact expiry match, try constructed pattern
-            patterns = [
-                f"BANKNIFTY{expiry}{year_suffix}{strike}{option_type}",  # BANKNIFTY27NOV2559000CE
-            ]
-            
-            for pattern in patterns:
-                for inst in instruments:
-                    if inst.get('tradingsymbol') == pattern:
-                        self.logger.info(
-                            f"Found option symbol by pattern: {inst['tradingsymbol']}",
-                            strike=strike,
-                            option_type=option_type
-                        )
-                        return inst['tradingsymbol']
-            
-            # If still not found, use first matching instrument (fallback)
-            if matching_instruments:
-                fallback_symbol = matching_instruments[0].get('tradingsymbol')
-                self.logger.warning(
-                    f"Using fallback option symbol: {fallback_symbol}",
+            if symbol:
+                self.logger.debug(
+                    f"Found option symbol via chain manager: {symbol}",
                     strike=strike,
-                    option_type=option_type,
-                    note="Expiry may not match exactly"
+                    option_type=option_type
                 )
-                return fallback_symbol
+                return symbol
             
-            # Last resort: construct symbol
-            symbol = f"BANKNIFTY{expiry}{year_suffix}{strike}{option_type}"
-            self.logger.error(
-                f"Option symbol not found in instruments, using constructed: {symbol}",
+            # Fallback to old method if chain manager fails
+            self.logger.warning(
+                f"Option chain manager didn't find contract, falling back to direct lookup",
                 strike=strike,
-                option_type=option_type,
-                warning="This will likely fail - check instrument list"
+                option_type=option_type
             )
-            return symbol
+            
+            # Fallback: Get expiry and construct symbol
+            expiry_str = self._get_option_expiry_date()
+            year_suffix = str(datetime.now().year)[2:]
+            fallback_symbol = f"BANKNIFTY{expiry_str}{year_suffix}{strike}{option_type}"
+            
+            self.logger.warning(
+                f"Using fallback constructed symbol: {fallback_symbol}",
+                strike=strike,
+                option_type=option_type
+            )
+            return fallback_symbol
             
         except Exception as e:
             self.logger.error(f"Error getting option symbol: {e}", exc_info=True)
-            # Fallback: construct symbol without verification
-            expiry = self._get_option_expiry_date()
+            # Last resort: construct symbol
+            expiry_str = self._get_option_expiry_date()
             year_suffix = str(datetime.now().year)[2:]
-            return f"BANKNIFTY{expiry}{year_suffix}{strike}{option_type}"
+            return f"BANKNIFTY{expiry_str}{year_suffix}{strike}{option_type}"
     
     def update_futures_price(self, tick: Dict) -> None:
         """
@@ -579,6 +587,11 @@ class OrderManager:
                 self.position.hedge_strike = hedge_strike
                 self.position.legs = buy_legs + sell_legs
                 
+                # Log all legs for LONG entry
+                for leg in buy_legs + sell_legs:
+                    if leg.status == OrderStatus.COMPLETE:
+                        self._log_option_contract(leg, "ENTRY_LONG", atm_strike=atm_strike)
+                
                 self.logger.info(
                     f"✅ LONG position established",
                     lot_size=current_lot_size,
@@ -717,6 +730,11 @@ class OrderManager:
                 self.position.hedge_strike = hedge_strike
                 self.position.legs = buy_legs + sell_legs
                 
+                # Log all legs for SHORT entry
+                for leg in buy_legs + sell_legs:
+                    if leg.status == OrderStatus.COMPLETE:
+                        self._log_option_contract(leg, "ENTRY_SHORT", atm_strike=atm_strike)
+                
                 self.logger.info(
                     f"✅ SHORT position established",
                     lot_size=current_lot_size,
@@ -773,6 +791,13 @@ class OrderManager:
             # Execute all exit legs together
             success = self._execute_legs(exit_legs, "EXIT", execute_together=True)
             
+            # Log all exit legs
+            if exit_legs:
+                atm_strike = self.position.atm_strike
+                for leg in exit_legs:
+                    if leg.status == OrderStatus.COMPLETE:
+                        self._log_option_contract(leg, "EXIT", atm_strike=atm_strike)
+            
             if success:
                 # Reset position
                 self.position = Position()
@@ -794,7 +819,16 @@ class OrderManager:
             True if SL executed successfully
         """
         self.logger.warning("🛑 Stop Loss triggered")
-        return self.exit_position()
+        
+        # Get exit legs info before executing (for logging)
+        atm_strike = self.position.atm_strike if self.position.position_type != PositionType.NONE else None
+        
+        success = self.exit_position()
+        
+        # Note: exit_position already logs EXIT legs, but we also log them as SL
+        # This is handled by checking trade_type in logs
+        
+        return success
     
     def _execute_legs(
         self,
@@ -850,6 +884,9 @@ class OrderManager:
                     if status == OrderStatus.COMPLETE:
                         # Get filled quantity and price
                         leg.filled_quantity, leg.average_price = self._get_order_details(leg.order_id)
+                        
+                        # Log option contract to JSON file
+                        self._log_option_contract(leg, leg_group)
                     elif status == OrderStatus.REJECTED:
                         all_success = False
                         if not allow_partial:
@@ -889,6 +926,9 @@ class OrderManager:
                         self.logger.info(
                             f"✅ {leg.transaction_type} {leg.quantity} {leg.symbol} @ {leg.average_price}"
                         )
+                        
+                        # Log option contract to JSON file
+                        self._log_option_contract(leg, leg_group)
                     elif status == OrderStatus.REJECTED:
                         self.logger.error(f"❌ Order rejected: {leg.symbol}")
                         if not allow_partial:
@@ -1048,4 +1088,71 @@ class OrderManager:
             'hedge_strike': self.position.hedge_strike,
             'num_legs': len(self.position.legs)
         }
+    
+    def _log_option_contract(
+        self,
+        leg: OrderLeg,
+        trade_type: str,
+        atm_strike: Optional[int] = None
+    ) -> None:
+        """
+        Log option contract execution to JSON file
+        
+        Args:
+            leg: OrderLeg object
+            trade_type: "ENTRY_LONG", "ENTRY_SHORT", "EXIT", "SL"
+            atm_strike: ATM strike used (optional)
+        """
+        try:
+            symbol = leg.symbol
+            
+            # Extract expiry, strike, option_type from symbol
+            # Format: BANKNIFTY25NOV2559000CE
+            expiry = None
+            if 'BANKNIFTY' in symbol:
+                parts = symbol.replace('BANKNIFTY', '')
+                # Find expiry (DDMMM format)
+                month_map = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
+                            'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+                for month in month_map:
+                    if month in parts:
+                        idx = parts.find(month)
+                        if idx >= 2:
+                            expiry = parts[idx-2:idx+3]
+                            break
+            
+            # Extract strike and option type
+            option_type = "CE" if symbol.endswith("CE") else "PE" if symbol.endswith("PE") else "UNKNOWN"
+            
+            # Extract strike (before CE/PE, after expiry and year)
+            strike = 0
+            if expiry and option_type != "UNKNOWN":
+                strike_str = symbol.replace("BANKNIFTY", "").replace(expiry, "").replace(option_type, "")
+                # Remove year suffix (2 digits at start)
+                if len(strike_str) > 2:
+                    strike_str = strike_str[2:]
+                try:
+                    strike = int(strike_str)
+                except ValueError:
+                    pass
+            
+            # Log to JSON file
+            self.contract_logger.log_contract(
+                trade_type=trade_type,
+                symbol=symbol,
+                option_type=option_type,
+                strike=strike,
+                expiry=expiry or "UNKNOWN",
+                leg_type=leg.leg_type,
+                transaction_type=leg.transaction_type,
+                quantity=leg.filled_quantity or leg.quantity,
+                average_price=leg.average_price or 0.0,
+                order_id=leg.order_id,
+                status=leg.status.value if hasattr(leg.status, 'value') else str(leg.status),
+                futures_price=self.futures_ltp,
+                atm_strike=atm_strike or (self.position.atm_strike if hasattr(self.position, 'atm_strike') and self.position.atm_strike else None),
+                notes=None
+            )
+        except Exception as e:
+            self.logger.error(f"Error logging option contract: {e}", exc_info=True)
 

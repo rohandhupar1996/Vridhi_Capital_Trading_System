@@ -91,6 +91,9 @@ class ZerodhaAuthenticator:
                     self.kite = KiteConnect(api_key=self.credentials.api_key)
                     self.kite.set_access_token(self.credentials.access_token)
                     self.logger.info("Initialized KiteConnect with saved access token")
+                    # Check if token is valid and update connection status
+                    if self.is_token_valid():
+                        self.logger.info("Already authenticated with valid token")
                 except Exception as e:
                     self.logger.error(f"Failed to initialize KiteConnect with saved token: {e}")
         except Exception as e:
@@ -221,8 +224,11 @@ class ZerodhaAuthenticator:
         try:
             # Try a simple API call to verify token
             self.kite.profile()
+            # If successful, update connection status
+            self.connection_status = ConnectionStatus.CONNECTED
             return True
         except Exception:
+            self.connection_status = ConnectionStatus.DISCONNECTED
             return False
     
     def reconnect(self) -> bool:

@@ -13,9 +13,10 @@ class MarginCalculator:
     Calculates margin requirements for BankNifty options strategies
     """
     
-    def __init__(self, kite, logger: Optional[ComponentLogger] = None):
+    def __init__(self, kite, logger: Optional[ComponentLogger] = None, option_chain_manager=None):
         self.kite = kite
         self.logger = logger or ComponentLogger.get_logger("margin_calculator")
+        self.option_chain_manager = option_chain_manager  # For getting correct option symbols
         
         # Cache for margin calculations
         self._margin_cache: Dict[str, float] = {}
@@ -30,10 +31,10 @@ class MarginCalculator:
         futures_price: float
     ) -> Dict[str, float]:
         """
-        Calculate margin requirement for LONG strategy:
-        - SELL ATM PUT (PE)
-        - BUY ATM CALL (CE)
-        - BUY 20 legs away PUT (PE) for margin
+        Calculate margin requirement for LONG strategy using Zerodha's actual margin API:
+        - SELL ATM PUT (PE) - uses actual SPAN + Exposure margin
+        - BUY ATM CALL (CE) - premium cost
+        - BUY 20 legs away PUT (PE) - premium cost
         
         Args:
             atm_strike: ATM strike price (calculated from FUTURES price, not spot)
@@ -45,12 +46,37 @@ class MarginCalculator:
             Dictionary with margin breakdown
         """
         try:
-            # Get option prices
-            atm_ce_symbol = f"BANKNIFTY{atm_strike}CE"
-            atm_pe_symbol = f"BANKNIFTY{atm_strike}PE"
-            hedge_pe_symbol = f"BANKNIFTY{hedge_strike}PE"
+            # Get actual option symbols with expiry from option chain manager
+            if self.option_chain_manager:
+                # Use option chain manager to get correct symbols with expiry
+                atm_ce_symbol = self.option_chain_manager.get_option_symbol(atm_strike, "CE")
+                atm_pe_symbol = self.option_chain_manager.get_option_symbol(atm_strike, "PE")
+                hedge_pe_symbol = self.option_chain_manager.get_option_symbol(hedge_strike, "PE")
+                
+                if not atm_ce_symbol or not atm_pe_symbol or not hedge_pe_symbol:
+                    self.logger.warning("Could not get option symbols from option chain manager")
+                    # Fallback to simplified calculation
+                    return self._fallback_long_margin(atm_strike, hedge_strike, lot_size, futures_price)
+            else:
+                # Fallback: construct symbols (will likely fail for margin API)
+                from datetime import datetime
+                now = datetime.now()
+                month_map = {1: 'JAN', 2: 'FEB', 3: 'MAR', 4: 'APR', 5: 'MAY', 6: 'JUN',
+                            7: 'JUL', 8: 'AUG', 9: 'SEP', 10: 'OCT', 11: 'NOV', 12: 'DEC'}
+                month = month_map[now.month]
+                day = str(now.day).zfill(2)
+                year_suffix = str(now.year)[2:]
+                expiry_str = f"{day}{month}"
+                
+                atm_ce_symbol = f"BANKNIFTY{expiry_str}{year_suffix}{atm_strike}CE"
+                atm_pe_symbol = f"BANKNIFTY{expiry_str}{year_suffix}{atm_strike}PE"
+                hedge_pe_symbol = f"BANKNIFTY{expiry_str}{year_suffix}{hedge_strike}PE"
             
-            # Get quotes
+            if not atm_ce_symbol or not atm_pe_symbol or not hedge_pe_symbol:
+                self.logger.error("Could not get option symbols")
+                return self._fallback_long_margin(atm_strike, hedge_strike, lot_size, futures_price)
+            
+            # Get quotes for premium calculation
             quotes = self.kite.quote([
                 f"NFO:{atm_ce_symbol}",
                 f"NFO:{atm_pe_symbol}",
@@ -61,72 +87,197 @@ class MarginCalculator:
             atm_pe_quote = quotes.get(f"NFO:{atm_pe_symbol}", {})
             hedge_pe_quote = quotes.get(f"NFO:{hedge_pe_symbol}", {})
             
-            # Get LTP or mid price
-            atm_ce_price = atm_ce_quote.get('last_price', 
+            # Get LTP or mid price for premium calculation
+            atm_ce_price = atm_ce_quote.get('last_price', 0) or (
                 (atm_ce_quote.get('depth', {}).get('buy', [{}])[0].get('price', 0) +
-                 atm_ce_quote.get('depth', {}).get('sell', [{}])[0].get('price', 0)) / 2)
+                 atm_ce_quote.get('depth', {}).get('sell', [{}])[0].get('price', 0)) / 2
+                if atm_ce_quote.get('depth') else 0
+            )
             
-            atm_pe_price = atm_pe_quote.get('last_price',
+            atm_pe_price = atm_pe_quote.get('last_price', 0) or (
                 (atm_pe_quote.get('depth', {}).get('buy', [{}])[0].get('price', 0) +
-                 atm_pe_quote.get('depth', {}).get('sell', [{}])[0].get('price', 0)) / 2)
+                 atm_pe_quote.get('depth', {}).get('sell', [{}])[0].get('price', 0)) / 2
+                if atm_pe_quote.get('depth') else 0
+            )
             
-            hedge_pe_price = hedge_pe_quote.get('last_price',
+            hedge_pe_price = hedge_pe_quote.get('last_price', 0) or (
                 (hedge_pe_quote.get('depth', {}).get('buy', [{}])[0].get('price', 0) +
-                 hedge_pe_quote.get('depth', {}).get('sell', [{}])[0].get('price', 0)) / 2)
+                 hedge_pe_quote.get('depth', {}).get('sell', [{}])[0].get('price', 0)) / 2
+                if hedge_pe_quote.get('depth') else 0
+            )
             
-            # Calculate margin (simplified - actual margin depends on broker SPAN)
-            # SELL ATM PE margin (naked short put margin)
-            # BUY ATM CE cost
-            # BUY hedge PE cost
+            quantity = lot_size * 35  # 35 units per lot
             
-            # Approximate margin calculation
-            # For short options, margin is typically: SPAN + Exposure + Premium
-            # For long options, it's just the premium paid
+            # Use BASKET MARGINS API to get actual margin with spread benefit
+            # This calculates margin for all 3 legs together, considering hedging
+            total_margin = 0
+            sell_pe_margin = 0
+            sell_pe_span = 0
+            sell_pe_exposure = 0
+            buy_ce_cost = 0
+            buy_hedge_pe_cost = 0
+            initial_margin = 0
+            final_margin = 0
             
-            # Simplified calculation (should use actual SPAN margin API if available)
-            span_margin_per_lot = futures_price * 0.15  # ~15% of futures price as SPAN
-            exposure_margin = futures_price * 0.05  # ~5% exposure margin
-            
-            # SELL ATM PE margin requirement
-            sell_pe_margin = (span_margin_per_lot + exposure_margin + atm_pe_price) * lot_size
-            
-            # BUY costs
-            buy_ce_cost = atm_ce_price * lot_size * 35  # 35 units per lot (BankNifty options)
-            buy_hedge_pe_cost = hedge_pe_price * lot_size * 35
-            
-            total_margin = sell_pe_margin + buy_ce_cost + buy_hedge_pe_cost
+            try:
+                # Build order params for all 3 legs (basket/spread order)
+                basket_orders = [
+                    {
+                        "exchange": "NFO",
+                        "tradingsymbol": atm_pe_symbol,
+                        "transaction_type": self.kite.TRANSACTION_TYPE_SELL,
+                        "variety": self.kite.VARIETY_REGULAR,
+                        "product": self.kite.PRODUCT_NRML,
+                        "order_type": self.kite.ORDER_TYPE_MARKET,
+                        "quantity": quantity,
+                        "price": 0,
+                        "trigger_price": 0
+                    },
+                    {
+                        "exchange": "NFO",
+                        "tradingsymbol": atm_ce_symbol,
+                        "transaction_type": self.kite.TRANSACTION_TYPE_BUY,
+                        "variety": self.kite.VARIETY_REGULAR,
+                        "product": self.kite.PRODUCT_NRML,
+                        "order_type": self.kite.ORDER_TYPE_MARKET,
+                        "quantity": quantity,
+                        "price": 0,
+                        "trigger_price": 0
+                    },
+                    {
+                        "exchange": "NFO",
+                        "tradingsymbol": hedge_pe_symbol,
+                        "transaction_type": self.kite.TRANSACTION_TYPE_BUY,
+                        "variety": self.kite.VARIETY_REGULAR,
+                        "product": self.kite.PRODUCT_NRML,
+                        "order_type": self.kite.ORDER_TYPE_MARKET,
+                        "quantity": quantity,
+                        "price": 0,
+                        "trigger_price": 0
+                    }
+                ]
+                
+                # Get basket margins (considers spread benefit)
+                basket_margins = self.kite.basket_order_margins(basket_orders, consider_positions=True)
+                
+                # Response structure: { 'initial': {...}, 'final': {...}, 'orders': [...] }
+                # No 'status' or 'data' wrapper - returns data directly
+                data = basket_margins if basket_margins else {}
+                
+                if data and (data.get('final') or data.get('initial')):
+                    # Get final margin (with spread benefit) - this is the actual margin needed
+                    final_data = data.get('final', {})
+                    final_margin = final_data.get('total', 0)
+                    
+                    # Get initial margin (sum of individual margins, without spread benefit)
+                    initial_data = data.get('initial', {})
+                    initial_margin = initial_data.get('total', 0)
+                    
+                    # Get individual order margins for breakdown
+                    orders_margin = data.get('orders', [])
+                    
+                    # Extract individual leg margins
+                    for order_margin in orders_margin:
+                        symbol = order_margin.get('tradingsymbol', '')
+                        if atm_pe_symbol in symbol:
+                            # SELL PE leg
+                            sell_pe_span = order_margin.get('span', 0)
+                            sell_pe_exposure = order_margin.get('exposure', 0)
+                            sell_pe_margin = order_margin.get('total', 0)
+                        elif atm_ce_symbol in symbol:
+                            # BUY CE leg (premium cost)
+                            buy_ce_cost = order_margin.get('option_premium', 0) or order_margin.get('total', 0)
+                        elif hedge_pe_symbol in symbol:
+                            # BUY Hedge PE leg (premium cost)
+                            buy_hedge_pe_cost = order_margin.get('option_premium', 0) or order_margin.get('total', 0)
+                    
+                    # Use final margin (with spread benefit) as total margin
+                    total_margin = final_margin
+                    
+                    self.logger.info(
+                        f"Basket margin calculated from Zerodha API",
+                        initial_margin=initial_margin,
+                        final_margin=final_margin,
+                        spread_benefit=initial_margin - final_margin,
+                        sell_pe_span=sell_pe_span,
+                        sell_pe_exposure=sell_pe_exposure,
+                        sell_pe_margin=sell_pe_margin,
+                        buy_ce_cost=buy_ce_cost,
+                        buy_hedge_pe_cost=buy_hedge_pe_cost
+                    )
+                    
+            except Exception as e:
+                self.logger.warning(f"Could not get basket margins from Zerodha API: {e}", exc_info=True)
+                # Fallback: Try individual order margins
+                try:
+                    # Try individual order margins API
+                    sell_pe_order = [{
+                        "exchange": "NFO",
+                        "tradingsymbol": atm_pe_symbol,
+                        "transaction_type": self.kite.TRANSACTION_TYPE_SELL,
+                        "variety": self.kite.VARIETY_REGULAR,
+                        "product": self.kite.PRODUCT_NRML,
+                        "order_type": self.kite.ORDER_TYPE_MARKET,
+                        "quantity": quantity,
+                        "price": 0,
+                        "trigger_price": 0
+                    }]
+                    
+                    margins = self.kite.order_margins(sell_pe_order)
+                    if margins and len(margins) > 0:
+                        margin_data = margins[0]
+                        sell_pe_span = margin_data.get('span', 0)
+                        sell_pe_exposure = margin_data.get('exposure', 0)
+                        sell_pe_margin = margin_data.get('total', 0)
+                except Exception as e2:
+                    self.logger.warning(f"Could not get individual margins either: {e2}")
+                    # Fallback to simplified calculation
+                    span_margin_per_lot = futures_price * 0.15
+                    exposure_margin = futures_price * 0.05
+                    sell_pe_margin = (span_margin_per_lot + exposure_margin + atm_pe_price) * lot_size
+                
+                # BUY costs (premium paid)
+                buy_ce_cost = atm_ce_price * quantity if atm_ce_price > 0 else 0
+                buy_hedge_pe_cost = hedge_pe_price * quantity if hedge_pe_price > 0 else 0
+                
+                total_margin = sell_pe_margin + buy_ce_cost + buy_hedge_pe_cost
+                self.logger.warning(f"Using fallback margin calculation (no spread benefit)")
             
             result = {
                 'total_margin': total_margin,
+                'initial_margin': initial_margin,  # Sum of individual margins
+                'final_margin': final_margin,  # Actual margin with spread benefit
                 'sell_pe_margin': sell_pe_margin,
+                'sell_pe_span': sell_pe_span,
+                'sell_pe_exposure': sell_pe_exposure,
                 'buy_ce_cost': buy_ce_cost,
                 'buy_hedge_pe_cost': buy_hedge_pe_cost,
                 'atm_ce_price': atm_ce_price,
                 'atm_pe_price': atm_pe_price,
-                'hedge_pe_price': hedge_pe_price
+                'hedge_pe_price': hedge_pe_price,
+                'uses_actual_api': final_margin > 0 or sell_pe_span > 0  # True if we got actual margin from API
             }
             
-            self.logger.debug(
+            self.logger.info(
                 f"LONG margin calculated",
                 total_margin=total_margin,
+                initial_margin=initial_margin,
+                final_margin=final_margin,
+                spread_benefit=(initial_margin - final_margin) if initial_margin > 0 else 0,
+                sell_pe_margin=sell_pe_margin,
+                buy_ce_cost=buy_ce_cost,
+                buy_hedge_pe_cost=buy_hedge_pe_cost,
                 lot_size=lot_size,
-                atm_strike=atm_strike
+                atm_strike=atm_strike,
+                uses_basket_api=(final_margin > 0)
             )
             
             return result
             
         except Exception as e:
             self.logger.error(f"Error calculating LONG margin: {e}", exc_info=True)
-            # Return conservative estimate
-            return {
-                'total_margin': futures_price * 0.25 * lot_size * 35,  # 25% of futures per lot (35 units per lot)
-                'sell_pe_margin': 0,
-                'buy_ce_cost': 0,
-                'buy_hedge_pe_cost': 0,
-                'atm_ce_price': 0,
-                'atm_pe_price': 0,
-                'hedge_pe_price': 0
-            }
+            # Return fallback calculation
+            return self._fallback_long_margin(atm_strike, hedge_strike, lot_size, futures_price)
     
     def calculate_short_margin(
         self,
@@ -278,6 +429,46 @@ class MarginCalculator:
         return {
             'long': long_margin,
             'short': short_margin
+        }
+    
+    def _fallback_long_margin(
+        self,
+        atm_strike: int,
+        hedge_strike: int,
+        lot_size: int,
+        futures_price: float
+    ) -> Dict[str, float]:
+        """Fallback margin calculation using simplified formula"""
+        # Simplified calculation (conservative estimate)
+        span_margin_per_lot = futures_price * 0.15  # ~15% of futures price as SPAN
+        exposure_margin = futures_price * 0.05  # ~5% exposure margin
+        
+        # Rough estimate for PE price (will be fetched later)
+        estimated_pe_price = futures_price * 0.004  # Rough estimate: ~0.4% of futures
+        
+        # SELL ATM PE margin requirement (simplified)
+        sell_pe_margin = (span_margin_per_lot + exposure_margin + estimated_pe_price) * lot_size
+        
+        # BUY costs (rough estimates - actual will be fetched)
+        estimated_ce_price = futures_price * 0.004  # Rough estimate
+        estimated_hedge_pe_price = futures_price * 0.003  # Rough estimate
+        
+        buy_ce_cost = estimated_ce_price * lot_size * 35
+        buy_hedge_pe_cost = estimated_hedge_pe_price * lot_size * 35
+        
+        total_margin = sell_pe_margin + buy_ce_cost + buy_hedge_pe_cost
+        
+        return {
+            'total_margin': total_margin,
+            'sell_pe_margin': sell_pe_margin,
+            'sell_pe_span': span_margin_per_lot * lot_size,
+            'sell_pe_exposure': exposure_margin * lot_size,
+            'buy_ce_cost': buy_ce_cost,
+            'buy_hedge_pe_cost': buy_hedge_pe_cost,
+            'atm_ce_price': estimated_ce_price,
+            'atm_pe_price': estimated_pe_price,
+            'hedge_pe_price': estimated_hedge_pe_price,
+            'uses_actual_api': False
         }
     
     def _calculate_atm_strike(self, futures_price: float) -> int:
