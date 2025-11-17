@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 
 from ..logging import ComponentLogger
 from .margin_calculator import MarginCalculator
+from .rate_limiter import get_rate_limiter, EndpointType
 
 
 class OrderStatus(Enum):
@@ -73,12 +74,14 @@ class OrderManager:
         kite,
         lot_size: int = 8,
         hedge_legs: int = 20,
-        logger: Optional[ComponentLogger] = None
+        logger: Optional[ComponentLogger] = None,
+        dry_run: bool = False,
     ):
         self.kite = kite
         self.lot_size = lot_size
         self.hedge_legs = hedge_legs  # 20 legs away for margin
         self.logger = logger or ComponentLogger.get_logger("order_manager")
+        self.dry_run = dry_run
         
         # Margin calculator
         self.margin_calc = MarginCalculator(kite, self.logger)
@@ -152,6 +155,10 @@ class OrderManager:
                 return None
             
             # Get quote for futures contract
+            # Apply rate limiting for quote requests (1 req/second)
+            rate_limiter = get_rate_limiter()
+            rate_limiter.wait_if_needed(EndpointType.QUOTE)
+            
             quote = self.kite.quote(f"NFO:{self.futures_symbol}")
             futures_data = quote.get(f"NFO:{self.futures_symbol}", {})
             
@@ -637,8 +644,8 @@ class OrderManager:
                     self.logger.error(f"Failed to place order for {leg.symbol}: {e}")
                     leg.status = OrderStatus.REJECTED
             
-            # Wait for all orders to complete
-            time.sleep(1)  # Give orders time to execute
+            # Wait for all orders to complete (longer delay to avoid rate limits)
+            time.sleep(3)  # 3 second delay to avoid rate limits
             
             # Check status of all orders
             all_success = True
@@ -676,8 +683,8 @@ class OrderManager:
                     leg.order_id = order_id
                     leg.status = OrderStatus.PLACED
                     
-                    # Wait for order to complete
-                    time.sleep(0.5)  # Small delay between orders
+                    # Wait for order to complete (longer delay to avoid rate limits)
+                    time.sleep(2.0)  # 2 second delay between orders to avoid rate limits
                     
                     # Check order status
                     status = self._check_order_status(order_id)
@@ -725,7 +732,23 @@ class OrderManager:
         Returns:
             Order ID if successful, None otherwise
         """
+        # Dry-run mode: do not hit broker, just simulate success
+        if self.dry_run:
+            fake_id = f"DRYRUN-{transaction_type}-{symbol}-{quantity}-{int(time.time() * 1000)}"
+            self.logger.info(
+                "DRY-RUN order",
+                symbol=symbol,
+                quantity=quantity,
+                side=transaction_type,
+                order_id=fake_id,
+            )
+            return fake_id
+
         try:
+            # Apply rate limiting for order placement (10 req/second)
+            rate_limiter = get_rate_limiter()
+            rate_limiter.wait_if_needed(EndpointType.ORDER)
+            
             order_id = self.kite.place_order(
                 variety=self.kite.VARIETY_REGULAR,
                 exchange=self.kite.EXCHANGE_NFO,
@@ -752,7 +775,9 @@ class OrderManager:
             return None
     
     def _check_order_status(self, order_id: str) -> OrderStatus:
-        """Check order status from broker"""
+        """Check order status from broker (or simulate in dry-run mode)"""
+        if self.dry_run and order_id.startswith("DRYRUN-"):
+            return OrderStatus.COMPLETE
         try:
             orders = self.kite.orders()
             for order in orders:
@@ -779,6 +804,11 @@ class OrderManager:
     
     def _get_order_details(self, order_id: str) -> Tuple[int, float]:
         """Get filled quantity and average price for an order"""
+        if self.dry_run and order_id.startswith("DRYRUN-"):
+            # Assume full fill at futures price in dry-run
+            qty = int(order_id.split("-")[-2]) if "-" in order_id else 0
+            price = float(self.futures_ltp or 0.0)
+            return qty, price
         try:
             orders = self.kite.orders()
             for order in orders:
@@ -793,6 +823,10 @@ class OrderManager:
     
     def _exit_partial_positions(self) -> None:
         """Exit any partially filled positions"""
+        if self.dry_run:
+            # In dry-run, we don't have real broker positions; just log the action
+            self.logger.info("DRY-RUN: exit_partial_positions called (no broker positions)")
+            return
         try:
             positions = self.kite.positions()['net']
             for pos in positions:

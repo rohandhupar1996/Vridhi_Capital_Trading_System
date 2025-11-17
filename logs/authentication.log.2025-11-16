@@ -1,0 +1,65 @@
+2025-11-16 18:16:40 | INFO     | [trading_system.zerodha_auth] Generated login URL: https://kite.zerodha.com/connect/login?api_key=YOUR_API_KEY&v=3
+2025-11-16 18:16:40 | WARNING  | [trading_system.zerodha_auth] Login not yet completed or token invalid. Run scripts/zerodha_login.py to obtain a fresh token.
+2025-11-16 18:16:40 | INFO     | [trading_system.zerodha_auth] Attempting to reconnect...
+2025-11-16 18:16:41 | WARNING  | [trading_system.zerodha_auth] Reconnection failed: Need new request token
+2025-11-16 18:16:41 | ERROR    | [trading_system.zerodha_auth] Failed to reconnect to Zerodha. Simulation will continue without live broker.
+2025-11-16 18:23:26 | INFO     | [trading_system.zerodha_auth] Generated login URL: https://kite.zerodha.com/connect/login?api_key=t2z5newnxxa7nkhs&v=3
+2025-11-16 18:25:16 | ERROR    | [trading_system.zerodha_auth] Failed to load tokens: Expecting value: line 1 column 1 (char 0)
+2025-11-16 18:25:17 | INFO     | [trading_system.zerodha_auth] Generated login URL: https://kite.zerodha.com/connect/login?api_key=t2z5newnxxa7nkhs&v=3
+2025-11-16 18:25:36 | ERROR    | [trading_system.zerodha_auth] Failed to load tokens: Expecting value: line 1 column 1 (char 0)
+2025-11-16 18:25:36 | INFO     | [trading_system.zerodha_auth] Generated login URL: https://kite.zerodha.com/connect/login?api_key=t2z5newnxxa7nkhs&v=3
+2025-11-16 18:25:48 | ERROR    | [trading_system.zerodha_auth] Failed to load tokens: Expecting value: line 1 column 1 (char 0)
+2025-11-16 18:25:48 | INFO     | [trading_system.zerodha_auth] Generated login URL: https://kite.zerodha.com/connect/login?api_key=t2z5newnxxa7nkhs&v=3
+2025-11-16 18:25:58 | INFO     | [trading_system.zerodha_auth] Saved access token to file
+2025-11-16 18:25:58 | INFO     | [trading_system.zerodha_auth] Successfully authenticated with Zerodha
+2025-11-16 18:26:27 | INFO     | [trading_system.zerodha_auth] Loaded saved access token from file
+2025-11-16 18:26:28 | INFO     | [trading_system.zerodha_auth] Generated login URL: https://kite.zerodha.com/connect/login?api_key=YOUR_API_KEY&v=3
+2025-11-16 18:26:28 | WARNING  | [trading_system.zerodha_auth] Login not yet completed or token invalid. Run scripts/zerodha_login.py to obtain a fresh token.
+2025-11-16 18:26:28 | INFO     | [trading_system.zerodha_auth] Attempting to reconnect...
+2025-11-16 18:26:28 | WARNING  | [trading_system.zerodha_auth] Reconnection failed: Need new request token
+2025-11-16 18:26:28 | ERROR    | [trading_system.zerodha_auth] Failed to reconnect to Zerodha. Simulation will continue without live broker.
+2025-11-16 18:27:20 | INFO     | [trading_system.zerodha_auth] Loaded saved access token from file
+2025-11-16 18:27:20 | INFO     | [trading_system.zerodha_auth] Initialized KiteConnect with saved access token
+2025-11-16 18:27:21 | INFO     | [trading_system.zerodha_auth] Already authenticated with valid token
+2025-11-16 18:27:21 | INFO     | [trading_system.zerodha_auth] Attempting to reconnect...
+2025-11-16 18:27:22 | INFO     | [trading_system.zerodha_auth] Reconnected using existing token
+2025-11-16 19:01:11 | INFO     | [trading_system.zerodha_auth] Loaded saved access token from file
+2025-11-16 19:01:11 | INFO     | [trading_system.zerodha_auth] Initialized KiteConnect with saved access token
+2025-11-16 19:01:12 | INFO     | [trading_system.zerodha_auth] Already authenticated with valid token
+2025-11-16 19:01:12 | INFO     | [trading_system.zerodha_auth] Attempting to reconnect...
+2025-11-16 19:01:13 | INFO     | [trading_system.zerodha_auth] Reconnected using existing token
+2025-11-16 19:03:11 | INFO     | [trading_system.zerodha_auth] Loaded saved access token from file
+2025-11-16 19:03:11 | INFO     | [trading_system.zerodha_auth] Initialized KiteConnect with saved access token
+2025-11-16 19:03:11 | INFO     | [trading_system.zerodha_auth] Already authenticated with valid token
+2025-11-16 19:03:11 | INFO     | [trading_system.zerodha_auth] Attempting to reconnect...
+2025-11-16 19:03:12 | INFO     | [trading_system.zerodha_auth] Reconnected using existing token
+2025-11-16 19:40:58 | INFO     | [trading_system.zerodha_auth] Loaded saved access token from file
+2025-11-16 19:40:58 | INFO     | [trading_system.zerodha_auth] Initialized KiteConnect with saved access token
+2025-11-16 19:40:59 | INFO     | [trading_system.zerodha_auth] Already authenticated with valid token
+2025-11-16 19:40:59 | INFO     | [trading_system.zerodha_auth] Attempting to reconnect...
+2025-11-16 19:41:00 | INFO     | [trading_system.zerodha_auth] Reconnected using existing token
+2025-11-16 20:26:51 | INFO     | [trading_system.zerodha_auth] Loaded saved access token from file
+2025-11-16 20:26:51 | INFO     | [trading_system.zerodha_auth] Initialized KiteConnect with saved access token
+2025-11-16 20:26:53 | INFO     | [trading_system.zerodha_auth] Already authenticated with valid token
+2025-11-16 20:26:53 | INFO     | [trading_system.zerodha_auth] Attempting to reconnect...
+2025-11-16 20:26:54 | INFO     | [trading_system.zerodha_auth] Reconnected using existing token
+2025-11-16 20:35:32 | INFO     | [trading_system.zerodha_auth] Loaded saved access token from file
+2025-11-16 20:35:32 | INFO     | [trading_system.zerodha_auth] Initialized KiteConnect with saved access token
+2025-11-16 20:35:33 | INFO     | [trading_system.zerodha_auth] Already authenticated with valid token
+2025-11-16 20:35:33 | INFO     | [trading_system.zerodha_auth] Attempting to reconnect...
+2025-11-16 20:35:33 | INFO     | [trading_system.zerodha_auth] Reconnected using existing token
+2025-11-16 20:52:53 | INFO     | [trading_system.zerodha_auth] Loaded saved access token from file
+2025-11-16 20:52:53 | INFO     | [trading_system.zerodha_auth] Initialized KiteConnect with saved access token
+2025-11-16 20:52:54 | INFO     | [trading_system.zerodha_auth] Already authenticated with valid token
+2025-11-16 20:52:54 | INFO     | [trading_system.zerodha_auth] Attempting to reconnect...
+2025-11-16 20:52:55 | INFO     | [trading_system.zerodha_auth] Reconnected using existing token
+2025-11-16 23:13:23 | INFO     | [trading_system.zerodha_auth] Loaded saved access token from file
+2025-11-16 23:13:23 | INFO     | [trading_system.zerodha_auth] Initialized KiteConnect with saved access token
+2025-11-16 23:13:24 | INFO     | [trading_system.zerodha_auth] Already authenticated with valid token
+2025-11-16 23:13:24 | INFO     | [trading_system.zerodha_auth] Attempting to reconnect...
+2025-11-16 23:13:25 | INFO     | [trading_system.zerodha_auth] Reconnected using existing token
+2025-11-16 23:27:53 | INFO     | [trading_system.zerodha_auth] Loaded saved access token from file
+2025-11-16 23:27:53 | INFO     | [trading_system.zerodha_auth] Initialized KiteConnect with saved access token
+2025-11-16 23:27:53 | INFO     | [trading_system.zerodha_auth] Already authenticated with valid token
+2025-11-16 23:27:53 | INFO     | [trading_system.zerodha_auth] Attempting to reconnect...
+2025-11-16 23:27:54 | INFO     | [trading_system.zerodha_auth] Reconnected using existing token

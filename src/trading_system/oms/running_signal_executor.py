@@ -156,10 +156,15 @@ class RunningSignalExecutor:
             self.logger.info("Trade blocked by earnings season filter")
             return False
 
+        # Use fast_execution based on whether margins are pre-calculated
+        # If margins pre-calculated → fast_execution=True (saves 0.5-0.8s for 9:15 AM signals)
+        # If margins NOT pre-calculated → fast_execution=False (safety margin check)
+        has_pre_calculated = hasattr(self.oms, '_pre_calculated_margins') and self.oms._pre_calculated_margins is not None
+        
         if signal == "LONG":
-            return self.oms.enter_long(fast_execution=True)
+            return self.oms.enter_long(fast_execution=has_pre_calculated)
         if signal == "SHORT":
-            return self.oms.enter_short(fast_execution=True)
+            return self.oms.enter_short(fast_execution=has_pre_calculated)
         return False
 
     def _exit_all(self) -> bool:

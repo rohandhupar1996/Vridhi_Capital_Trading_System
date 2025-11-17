@@ -84,6 +84,15 @@ class ZerodhaAuthenticator:
                     self.credentials.token_expiry = datetime.fromisoformat(expiry_str)
             
             self.logger.info("Loaded saved access token from file")
+
+            # If we have an access token and API key, initialize KiteConnect instance
+            if self.credentials.access_token and self.credentials.api_key:
+                try:
+                    self.kite = KiteConnect(api_key=self.credentials.api_key)
+                    self.kite.set_access_token(self.credentials.access_token)
+                    self.logger.info("Initialized KiteConnect with saved access token")
+                except Exception as e:
+                    self.logger.error(f"Failed to initialize KiteConnect with saved token: {e}")
         except Exception as e:
             self.logger.error(f"Failed to load tokens: {e}")
     
@@ -140,12 +149,30 @@ class ZerodhaAuthenticator:
         
         return self.health
     
-    def get_login_url(self) -> str:
-        """Generate login URL for Zerodha"""
+    def get_login_url(self, redirect_url: Optional[str] = None) -> str:
+        """
+        Generate login URL for Zerodha
+        
+        Args:
+            redirect_url: Optional custom redirect URL (defaults to KiteConnect default)
+            
+        Returns:
+            Login URL
+        """
         if not self.kite:
             self.kite = KiteConnect(api_key=self.credentials.api_key)
         
-        login_url = self.kite.login_url()
+        if redirect_url:
+            # Note: KiteConnect doesn't directly support custom redirect_url in login_url()
+            # But we can use it if needed for callback server
+            login_url = self.kite.login_url()
+            # Append redirect_url if provided (Zerodha may support this)
+            if redirect_url and 'redirect_url' not in login_url:
+                separator = '&' if '?' in login_url else '?'
+                login_url = f"{login_url}{separator}redirect_url={redirect_url}"
+        else:
+            login_url = self.kite.login_url()
+        
         self.logger.info(f"Generated login URL: {login_url}")
         return login_url
     

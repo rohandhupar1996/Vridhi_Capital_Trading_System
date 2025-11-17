@@ -1,0 +1,65 @@
+2025-11-16 18:16:40 | INFO     | Generated login URL: https://kite.zerodha.com/connect/login?api_key=YOUR_API_KEY&v=3
+2025-11-16 18:16:40 | WARNING  | Login not yet completed or token invalid. Run scripts/zerodha_login.py to obtain a fresh token.
+2025-11-16 18:16:40 | INFO     | Attempting to reconnect...
+2025-11-16 18:16:41 | WARNING  | Reconnection failed: Need new request token
+2025-11-16 18:16:41 | ERROR    | Failed to reconnect to Zerodha. Simulation will continue without live broker.
+2025-11-16 18:23:26 | INFO     | Generated login URL: https://kite.zerodha.com/connect/login?api_key=t2z5newnxxa7nkhs&v=3
+2025-11-16 18:25:16 | ERROR    | Failed to load tokens: Expecting value: line 1 column 1 (char 0)
+2025-11-16 18:25:17 | INFO     | Generated login URL: https://kite.zerodha.com/connect/login?api_key=t2z5newnxxa7nkhs&v=3
+2025-11-16 18:25:36 | ERROR    | Failed to load tokens: Expecting value: line 1 column 1 (char 0)
+2025-11-16 18:25:36 | INFO     | Generated login URL: https://kite.zerodha.com/connect/login?api_key=t2z5newnxxa7nkhs&v=3
+2025-11-16 18:25:48 | ERROR    | Failed to load tokens: Expecting value: line 1 column 1 (char 0)
+2025-11-16 18:25:48 | INFO     | Generated login URL: https://kite.zerodha.com/connect/login?api_key=t2z5newnxxa7nkhs&v=3
+2025-11-16 18:25:58 | INFO     | Saved access token to file
+2025-11-16 18:25:58 | INFO     | Successfully authenticated with Zerodha
+2025-11-16 18:26:27 | INFO     | Loaded saved access token from file
+2025-11-16 18:26:28 | INFO     | Generated login URL: https://kite.zerodha.com/connect/login?api_key=YOUR_API_KEY&v=3
+2025-11-16 18:26:28 | WARNING  | Login not yet completed or token invalid. Run scripts/zerodha_login.py to obtain a fresh token.
+2025-11-16 18:26:28 | INFO     | Attempting to reconnect...
+2025-11-16 18:26:28 | WARNING  | Reconnection failed: Need new request token
+2025-11-16 18:26:28 | ERROR    | Failed to reconnect to Zerodha. Simulation will continue without live broker.
+2025-11-16 18:27:20 | INFO     | Loaded saved access token from file
+2025-11-16 18:27:20 | INFO     | Initialized KiteConnect with saved access token
+2025-11-16 18:27:21 | INFO     | Already authenticated with valid token
+2025-11-16 18:27:21 | INFO     | Attempting to reconnect...
+2025-11-16 18:27:22 | INFO     | Reconnected using existing token
+2025-11-16 19:01:11 | INFO     | Loaded saved access token from file
+2025-11-16 19:01:11 | INFO     | Initialized KiteConnect with saved access token
+2025-11-16 19:01:12 | INFO     | Already authenticated with valid token
+2025-11-16 19:01:12 | INFO     | Attempting to reconnect...
+2025-11-16 19:01:13 | INFO     | Reconnected using existing token
+2025-11-16 19:03:11 | INFO     | Loaded saved access token from file
+2025-11-16 19:03:11 | INFO     | Initialized KiteConnect with saved access token
+2025-11-16 19:03:11 | INFO     | Already authenticated with valid token
+2025-11-16 19:03:11 | INFO     | Attempting to reconnect...
+2025-11-16 19:03:12 | INFO     | Reconnected using existing token
+2025-11-16 19:40:58 | INFO     | Loaded saved access token from file
+2025-11-16 19:40:58 | INFO     | Initialized KiteConnect with saved access token
+2025-11-16 19:40:59 | INFO     | Already authenticated with valid token
+2025-11-16 19:40:59 | INFO     | Attempting to reconnect...
+2025-11-16 19:41:00 | INFO     | Reconnected using existing token
+2025-11-16 20:26:51 | INFO     | Loaded saved access token from file
+2025-11-16 20:26:51 | INFO     | Initialized KiteConnect with saved access token
+2025-11-16 20:26:53 | INFO     | Already authenticated with valid token
+2025-11-16 20:26:53 | INFO     | Attempting to reconnect...
+2025-11-16 20:26:54 | INFO     | Reconnected using existing token
+2025-11-16 20:35:32 | INFO     | Loaded saved access token from file
+2025-11-16 20:35:32 | INFO     | Initialized KiteConnect with saved access token
+2025-11-16 20:35:33 | INFO     | Already authenticated with valid token
+2025-11-16 20:35:33 | INFO     | Attempting to reconnect...
+2025-11-16 20:35:33 | INFO     | Reconnected using existing token
+2025-11-16 20:52:53 | INFO     | Loaded saved access token from file
+2025-11-16 20:52:53 | INFO     | Initialized KiteConnect with saved access token
+2025-11-16 20:52:54 | INFO     | Already authenticated with valid token
+2025-11-16 20:52:54 | INFO     | Attempting to reconnect...
+2025-11-16 20:52:55 | INFO     | Reconnected using existing token
+2025-11-16 23:13:23 | INFO     | Loaded saved access token from file
+2025-11-16 23:13:23 | INFO     | Initialized KiteConnect with saved access token
+2025-11-16 23:13:24 | INFO     | Already authenticated with valid token
+2025-11-16 23:13:24 | INFO     | Attempting to reconnect...
+2025-11-16 23:13:25 | INFO     | Reconnected using existing token
+2025-11-16 23:27:53 | INFO     | Loaded saved access token from file
+2025-11-16 23:27:53 | INFO     | Initialized KiteConnect with saved access token
+2025-11-16 23:27:53 | INFO     | Already authenticated with valid token
+2025-11-16 23:27:53 | INFO     | Attempting to reconnect...
+2025-11-16 23:27:54 | INFO     | Reconnected using existing token

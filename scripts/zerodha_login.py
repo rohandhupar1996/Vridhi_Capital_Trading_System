@@ -19,6 +19,7 @@ for path in (PROJECT_ROOT, SRC_PATH):
 from dotenv import load_dotenv
 from src.trading_system.broker import ZerodhaAuthenticator, ConnectionMonitor
 from src.trading_system.broker.zerodha_auth import ZerodhaCredentials
+from src.trading_system.broker.oauth_callback_server import OAuthCallbackServer
 from src.trading_system.config import AppConfig
 from src.trading_system.logging import setup_logging, ComponentLogger
 
@@ -95,19 +96,54 @@ def main():
         return
     
     # Need new login
-    print("📱 Generating login URL...")
+    print("📱 Setting up automated token capture...")
+    
+    # Start OAuth callback server
+    callback_server = OAuthCallbackServer(port=8080, timeout=120)
+    if not callback_server.start():
+        print("❌ Failed to start callback server. Falling back to manual entry.")
+        callback_server = None
+    else:
+        callback_url = callback_server.get_callback_url()
+        print(f"✅ Callback server started on {callback_url}")
+        print("   (This will automatically capture your request_token)\n")
+    
+    # Generate login URL
+    print("🌐 Generating login URL...")
     login_url = authenticator.get_login_url()
-    print(f"\n🌐 Please visit this URL to login:")
-    print(f"   {login_url}\n")
+    print(f"\n📋 Login URL: {login_url}\n")
     
     # Open browser automatically
     import webbrowser
     webbrowser.open(login_url)
     print("✅ Browser opened automatically")
-    print("\n📝 After logging in, you'll be redirected to a URL with 'request_token'")
-    print("   Copy the request_token from the URL and enter it below:")
     
-    request_token = input("\n   Enter request_token: ").strip()
+    if callback_server:
+        print("\n⏳ Waiting for you to complete login in browser...")
+        print("   (The script will automatically capture the token)")
+        print("   You can close this window after login completes.\n")
+        
+        try:
+            # Wait for callback
+            request_token = callback_server.wait_for_callback()
+            
+            if request_token:
+                print(f"✅ Request token captured automatically!")
+                print(f"   Token: {request_token[:20]}...")
+            else:
+                print("⏱️  Timeout waiting for callback. Please enter token manually:")
+                request_token = input("\n   Enter request_token: ").strip()
+        except Exception as e:
+            print(f"⚠️  Error capturing token automatically: {e}")
+            print("   Please enter token manually:")
+            request_token = input("\n   Enter request_token: ").strip()
+        finally:
+            callback_server.stop()
+    else:
+        # Manual entry fallback
+        print("\n📝 After logging in, you'll be redirected to a URL with 'request_token'")
+        print("   Copy the request_token from the URL and enter it below:")
+        request_token = input("\n   Enter request_token: ").strip()
     
     if not request_token:
         print("❌ No request_token provided")

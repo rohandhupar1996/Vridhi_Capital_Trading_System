@@ -1,0 +1,10 @@
+2025-11-17 01:36:41 | CRITICAL | Circuit breaker activated: test_reason
+2025-11-17 01:36:41 | WARNING  | Lot size 10 exceeds max 8
+2025-11-17 01:36:41 | CRITICAL | Circuit breaker activated: test_breach
+2025-11-17 01:36:41 | CRITICAL | Circuit breaker activated: test
+2025-11-17 01:36:41 | WARNING  | Lot size 10 exceeds max 8
+2025-11-17 01:36:58 | CRITICAL | Circuit breaker activated: test_reason
+2025-11-17 01:36:58 | WARNING  | Lot size 10 exceeds max 8
+2025-11-17 01:36:58 | CRITICAL | Circuit breaker activated: test_breach
+2025-11-17 01:36:58 | CRITICAL | Circuit breaker activated: test
+2025-11-17 01:36:58 | WARNING  | Lot size 10 exceeds max 8
