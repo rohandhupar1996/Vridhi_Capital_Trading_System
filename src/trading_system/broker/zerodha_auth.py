@@ -254,12 +254,13 @@ class ZerodhaAuthenticator:
         self.logger.warning("Reconnection failed: Need new request token")
         return False
     
-    def login(self, auto_open_browser: bool = True) -> bool:
+    def login(self, auto_open_browser: bool = True, use_oauth_callback: bool = True) -> bool:
         """
-        Perform complete login flow
+        Perform complete login flow with automated OAuth callback
         
         Args:
             auto_open_browser: Automatically open browser for login
+            use_oauth_callback: Use OAuth callback server for automated token capture
             
         Returns:
             True if login successful
@@ -280,13 +281,59 @@ class ZerodhaAuthenticator:
             self.logger.info("Already authenticated with valid token")
             return True
         
-        # Generate login URL
+        # Try automated OAuth callback if enabled
+        if use_oauth_callback:
+            try:
+                from .oauth_callback_server import OAuthCallbackServer
+                
+                # Start OAuth callback server
+                callback_server = OAuthCallbackServer(port=8080, timeout=120)
+                if callback_server.start():
+                    callback_url = callback_server.get_callback_url()
+                    self.logger.info(f"OAuth callback server started on {callback_url}")
+                    
+                    # Generate login URL with callback
+                    login_url = self.get_login_url(redirect_url=callback_url)
+                    
+                    if auto_open_browser:
+                        self.logger.info("Opening browser for automated Zerodha login...")
+                        print("\n🌐 Opening browser for login...")
+                        print("   Please complete login in the browser window")
+                        webbrowser.open(login_url)
+                        print("   Waiting for OAuth callback...\n")
+                    
+                    # Wait for callback
+                    request_token = callback_server.wait_for_callback()
+                    callback_server.stop()
+                    
+                    if request_token:
+                        print(f"\n✅ Request token captured: {request_token[:30]}...")
+                    
+                    if request_token:
+                        self.logger.info("✅ Request token captured automatically!")
+                        # Authenticate with request token
+                        if self.authenticate_with_token(request_token):
+                            self._save_tokens()
+                            self.connection_status = ConnectionStatus.CONNECTED
+                            self.logger.info("✅ Login successful!")
+                            return True
+                        else:
+                            self.logger.error("Failed to authenticate with request token")
+                    else:
+                        self.logger.warning("OAuth callback timeout - falling back to manual entry")
+                else:
+                    self.logger.warning("Failed to start OAuth callback server - falling back to manual entry")
+            except Exception as e:
+                self.logger.warning(f"OAuth callback failed: {e} - falling back to manual entry")
+        
+        # Fallback to manual entry
         login_url = self.get_login_url()
         
         if auto_open_browser:
             self.logger.info("Opening browser for Zerodha login...")
             webbrowser.open(login_url)
-            self.logger.info("Please complete login in browser and provide request token")
+            self.logger.info("Please complete login in browser and copy the request_token from the redirect URL")
+            self.logger.info("Then run: PYTHONPATH=. python scripts/zerodha_login.py")
         
         return False
     

@@ -4,7 +4,7 @@ Unified exit logic for all backtest scenarios
 """
 
 import numpy as np
-from typing import Tuple, Optional, List
+from typing import Tuple, Optional
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -29,9 +29,6 @@ class Trade:
     # Drawdown tracking (if enabled)
     max_favorable_pct: float = 0.0  # Max profit during trade
     max_adverse_pct: float = 0.0    # Max loss during trade
-    
-    # Volume nodes at entry (if using volume exits)
-    volume_nodes: Optional[List[float]] = None
 
 
 @dataclass
@@ -51,8 +48,7 @@ class ExitStrategyManager:
     Manages all exit strategies in one place
     Priority order:
     1. Repaint detection (if enabled)
-    2. Volume node (if enabled for direction)
-    3. Default N-bar (if in default/hybrid mode)
+    2. Default N-bar exit
     """
     
     def __init__(self, config):
@@ -61,29 +57,6 @@ class ExitStrategyManager:
             config: BacktestConfig instance
         """
         self.config = config
-        self.volume_detector = None
-        
-        # Initialize volume detector if needed
-        if config.exit_mode in ['volume', 'hybrid']:
-            # Import here to avoid circular dependency
-            try:
-                from strategy.core.volume_nodes import VolumeNodeDetector
-            except ImportError:
-                try:
-                    from core.volume_nodes import VolumeNodeDetector  # legacy support
-                except ImportError:
-                    print("⚠️  Warning: VolumeNodeDetector not available")
-                    self.volume_detector = None
-                else:
-                    self.volume_detector = VolumeNodeDetector(
-                        lookback=config.volume_lookback,
-                        num_rows=config.volume_num_rows
-                    )
-            else:
-                self.volume_detector = VolumeNodeDetector(
-                    lookback=config.volume_lookback,
-                    num_rows=config.volume_num_rows
-                )
     
     def check_exit(self, trade: Trade, data: MarketData, 
                    repaint_detector=None) -> Tuple[bool, str]:
@@ -101,16 +74,9 @@ class ExitStrategyManager:
             if self._check_repaint_exit(trade, repaint_detector):
                 return True, "repaint"
         
-        # Priority 2: Volume node exit (if enabled for this direction)
-        if self.config.exit_mode in ['volume', 'hybrid']:
-            should_exit, reason = self._check_volume_exit(trade, data)
-            if should_exit:
-                return True, reason
-        
-        # Priority 3: Default N-bar exit
-        if self.config.exit_mode in ['default', 'hybrid']:
-            if self._check_default_exit(trade, data):
-                return True, f"{self.config.default_exit_bars}_bars"
+        # Priority 2: Default N-bar exit
+        if self._check_default_exit(trade, data):
+            return True, f"{self.config.default_exit_bars}_bars"
         
         return False, ""
     
@@ -122,54 +88,10 @@ class ExitStrategyManager:
         # Check if direction changed
         return repaint_detector.check_repaint(trade.direction)
     
-    def _check_volume_exit(self, trade: Trade, data: MarketData) -> Tuple[bool, str]:
-        """Check if price crossed volume node"""
-        if not self.volume_detector or not trade.volume_nodes:
-            return False, ""
-        
-        # Check if this direction uses volume exit
-        direction_name = 'LONG' if trade.direction == 1 else 'SHORT'
-        if direction_name not in self.config.volume_exit_directions:
-            return False, ""
-        
-        # Only works on 15min timeframe
-        if trade.timeframe != '15m':
-            return False, ""
-        
-        current_price = data.close
-        
-        # For LONG: exit if price hits resistance (node above entry)
-        # For SHORT: exit if price hits support (node below entry)
-        for node_price in trade.volume_nodes:
-            if trade.direction == 1:  # LONG
-                # Check if we hit resistance above
-                if node_price > trade.entry_price:
-                    if current_price >= node_price:
-                        return True, "volume_node"
-            else:  # SHORT
-                # Check if we hit support below
-                if node_price < trade.entry_price:
-                    if current_price <= node_price:
-                        return True, "volume_node"
-        
-        return False, ""
-    
     def _check_default_exit(self, trade: Trade, data: MarketData) -> bool:
         """Check if N bars have passed"""
         bars_in_trade = data.bar - trade.entry_bar
         return bars_in_trade >= self.config.default_exit_bars
-    
-    def update_volume_nodes(self, high: np.ndarray, low: np.ndarray, 
-                           volume: np.ndarray, close: np.ndarray):
-        """Update volume profile (call this each bar)"""
-        if self.volume_detector:
-            self.volume_detector.update(high, low, volume, close)
-    
-    def get_current_volume_nodes(self) -> List[float]:
-        """Get current volume peak prices"""
-        if self.volume_detector and hasattr(self.volume_detector, 'peak_prices'):
-            return self.volume_detector.peak_prices
-        return []
     
     def calculate_trade_pnl(self, trade: Trade, exit_price: float) -> float:
         """Calculate P&L percentage"""
@@ -214,16 +136,12 @@ if __name__ == "__main__":
     # Test different configs
     configs_to_test = [
         BacktestConfig(exit_mode='default', name='Default Exit'),
-        BacktestConfig(exit_mode='volume', volume_exit_directions=['SHORT'], name='Volume SHORT'),
-        BacktestConfig(exit_mode='hybrid', volume_exit_directions=['LONG', 'SHORT'], name='Hybrid Both'),
     ]
     
     for cfg in configs_to_test:
         print(f"\n{cfg.name}:")
         manager = ExitStrategyManager(cfg)
         print(f"  Exit mode: {cfg.exit_mode}")
-        print(f"  Volume detector: {'✓' if manager.volume_detector else '✗'}")
-        print(f"  Volume directions: {cfg.volume_exit_directions}")
     
     # Test trade exit logic
     print("\n" + "="*70)
@@ -239,15 +157,13 @@ if __name__ == "__main__":
         entry_time=datetime.now(),
         entry_price=50000.0,
         direction=-1,  # SHORT
-        timeframe='15m',
-        volume_nodes=[49500.0, 50500.0, 51000.0]
+        timeframe='15m'
     )
     
     # Test at different prices
     test_cases = [
         (100, 50100.0, "Entry - no exit expected"),
-        (101, 50500.0, "Hit volume node - should exit"),
-        (104, 50000.0, "4 bars passed - should exit on hybrid"),
+        (104, 50000.0, "4 bars passed - should exit"),
     ]
     
     for bar, price, description in test_cases:

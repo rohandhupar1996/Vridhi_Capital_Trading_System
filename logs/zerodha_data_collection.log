@@ -1,0 +1,26 @@
+2025-11-17 18:59:40 | INFO     | Loaded credentials from /Users/rohan/Downloads/Vridhi_Capital_Trading_System/configs/.env
+2025-11-17 18:59:40 | INFO     | Loaded saved access token from file
+2025-11-17 18:59:40 | INFO     | Initialized KiteConnect with saved access token
+2025-11-17 18:59:42 | INFO     | Already authenticated with valid token
+2025-11-17 19:00:09 | INFO     | Loaded credentials from /Users/rohan/Downloads/Vridhi_Capital_Trading_System/configs/.env
+2025-11-17 19:00:09 | INFO     | Loaded saved access token from file
+2025-11-17 19:00:09 | INFO     | Initialized KiteConnect with saved access token
+2025-11-17 19:00:10 | INFO     | Already authenticated with valid token
+2025-11-17 19:00:12 | ERROR    | No futures contract found - check if market is open or contracts are available
+2025-11-17 19:00:24 | INFO     | Loaded credentials from /Users/rohan/Downloads/Vridhi_Capital_Trading_System/configs/.env
+2025-11-17 19:00:24 | INFO     | Loaded saved access token from file
+2025-11-17 19:00:24 | INFO     | Initialized KiteConnect with saved access token
+2025-11-17 19:00:25 | INFO     | Already authenticated with valid token
+2025-11-17 19:00:28 | ERROR    | No futures contract found - check if market is open or contracts are available
+2025-11-17 19:00:54 | INFO     | Loaded credentials from /Users/rohan/Downloads/Vridhi_Capital_Trading_System/configs/.env
+2025-11-17 19:00:54 | INFO     | Loaded saved access token from file
+2025-11-17 19:00:54 | INFO     | Initialized KiteConnect with saved access token
+2025-11-17 19:00:55 | INFO     | Already authenticated with valid token
+2025-11-17 19:00:58 | INFO     | Using provided symbol: BANKNIFTY25NOVFUT
+2025-11-17 19:00:58 | WARNING  | No historical data found, starting with empty buffer
+2025-11-17 19:00:58 | WARNING  | No historical data found, starting with empty buffer
+2025-11-17 19:00:58 | WARNING  | No historical data found, starting with empty buffer
+2025-11-17 19:00:58 | INFO     | WebSocket connected | response={"peer": "tcp4:15.207.64.80:443", "headers": {"date": "Mon, 17 Nov 2025 18:00:58 GMT", "connection": "upgrade", "upgrade": "websocket", "sec-websocket-accept": "2kf2Ut73wXomGwvM7wMItyUa8EE="}, "version": 18, "protocol": null, "extensions": []}
+2025-11-17 19:00:59 | INFO     | WebSocket connection initiated | futures_token=9485058
+2025-11-17 19:01:01 | DEBUG    | Futures price updated from tick | price=59058.4 | token=9485058
+2025-11-17 19:01:40 | INFO     | WebSocket connection closed

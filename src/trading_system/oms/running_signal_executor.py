@@ -19,7 +19,7 @@ from ..logging import ComponentLogger
 from .earnings_filter import EarningsSeasonFilter, EarningsFilterConfig
 
 
-SignalType = Literal["LONG", "SHORT", "NONE"]
+SignalType = Literal["LONG", "SHORT", "NONE", "EXIT_LONG", "EXIT_SHORT"]
 
 
 @dataclass
@@ -29,6 +29,7 @@ class CandleContext:
     last_signal: SignalType = "NONE"
     entry_signal: SignalType = "NONE"
     entry_candle_id: Optional[str] = None
+    # Note: bars_held removed - ML algorithm handles 4-bar exit logic
 
 
 class RunningSignalExecutor:
@@ -47,17 +48,40 @@ class RunningSignalExecutor:
         self.logger = logger or ComponentLogger.get_logger("running_signal_executor")
         self.ctx: Optional[CandleContext] = None
         self.earnings_filter = earnings_filter or EarningsSeasonFilter()
+        self._last_candle_id: Optional[str] = None  # Track last candle for bar counting
 
     def start_new_candle(self, candle_id: str, opened_at: datetime) -> None:
-        """Initialize context for a new candle."""
-        self.ctx = CandleContext(candle_id=candle_id, opened_at=opened_at)
+        """
+        Initialize context for a new candle.
+        Note: 4-bar exit is handled by ML algorithm, not here.
+        This method only tracks candle context for flicker detection.
+        """
+        # Check if this is a new candle (different from last)
+        is_new_candle = candle_id != self._last_candle_id
+        
+        # Create new context (no bar counting - ML algorithm handles that)
+        if is_new_candle:
+            self.ctx = CandleContext(
+                candle_id=candle_id,
+                opened_at=opened_at
+            )
+            self._last_candle_id = candle_id
+        else:
+            # Same candle, just update context
+            if not self.ctx:
+                self.ctx = CandleContext(candle_id=candle_id, opened_at=opened_at)
+            else:
+                self.ctx.candle_id = candle_id
+                self.ctx.opened_at = opened_at
+        
         self.logger.info("New candle started", candle_id=candle_id, opened_at=opened_at.isoformat())
 
     def on_running_signal(self, signal: SignalType, candle_id: str, futures_price: float) -> None:
         """
         Handle running-candle signal. Acts immediately:
+        - If ML algorithm says EXIT_LONG/EXIT_SHORT → exit immediately (ML handles 4-bar and opposing signals)
         - If no position and signal is LONG/SHORT → enter
-        - If opposite signal arrives in same candle → exit and reverse
+        - If opposite signal arrives in same candle → exit and reverse (OMS-level protection)
         - If same signal repeats → ignore
         """
         if not self.ctx or self.ctx.candle_id != candle_id:
@@ -69,12 +93,24 @@ class RunningSignalExecutor:
         pos = self.oms.get_position_status()
         pos_type = pos["position_type"]
 
+        # Ensure OMS has latest futures price
+        self.oms.futures_ltp = futures_price
+
+        # Handle ML algorithm exit signals FIRST (ML handles 4-bar exit and opposing signals)
+        if signal == "EXIT_LONG":
+            if pos_type == PositionType.LONG.value:
+                self.logger.info("ML algorithm exit signal: EXIT LONG", candle_id=candle_id)
+                self._exit_all()
+            return
+        elif signal == "EXIT_SHORT":
+            if pos_type == PositionType.SHORT.value:
+                self.logger.info("ML algorithm exit signal: EXIT SHORT", candle_id=candle_id)
+                self._exit_all()
+            return
+
         if signal == "NONE":
             # Do nothing on NONE during candle; final handling at candle close
             return
-
-        # Ensure OMS has latest futures price
-        self.oms.futures_ltp = futures_price
 
         # No position: enter immediately
         if pos_type == PositionType.NONE.value:
@@ -89,7 +125,7 @@ class RunningSignalExecutor:
             # Same-side signal on same candle → ignore
             return
 
-        # Opposite signal on the same candle → exit and reverse instantly
+        # Opposite signal on the same candle → exit and reverse instantly (OMS-level protection)
         self.logger.info("Same-candle reversal detected", from_side=pos_type, to_side=signal, candle_id=candle_id)
         self._exit_all()
         entered = self._enter_signal(signal)
@@ -137,9 +173,10 @@ class RunningSignalExecutor:
                 )
                 if pos_type != PositionType.NONE.value:
                     self._exit_all()
-                self._enter_signal(final_signal)
-                self.ctx.entry_signal = final_signal
-                self.ctx.entry_candle_id = candle_id
+                entered = self._enter_signal(final_signal)
+                if entered:
+                    self.ctx.entry_signal = final_signal
+                    self.ctx.entry_candle_id = candle_id
             else:
                 # Position already matches final signal; keep as-is
                 pass
@@ -168,6 +205,8 @@ class RunningSignalExecutor:
         return False
 
     def _exit_all(self) -> bool:
-        return self.oms.exit_position()
+        """Exit position"""
+        success = self.oms.exit_position()
+        return success
 
 

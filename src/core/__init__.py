@@ -9,7 +9,6 @@ _SUBMODULES = [
     "lorentzian_classifier",
     "ml_extension",
     "trading_system",
-    "volume_nodes",
 ]
 
 for _name in _SUBMODULES:

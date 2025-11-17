@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 import pandas as pd
+import pytz
 
 from src.strategy.core.trading_system import (  # type: ignore[import]
     LorentzianTradingSystem,
@@ -15,6 +16,9 @@ from src.strategy.core.trading_system import (  # type: ignore[import]
 from src.strategy.backtest.metrics import MetricsCalculator  # type: ignore[import]
 from src.trading_system.config import BacktestConfig
 from src.trading_system.backtest.models import ExitReason, Trade
+
+# Asia/Kolkata timezone
+KOLKATA_TZ = pytz.timezone("Asia/Kolkata")
 
 
 class ExitController:
@@ -125,7 +129,9 @@ class SingleTimeframeBacktester:
             )
 
         df = df.iloc[::-1].reset_index(drop=True)
-        df["timestamp"] = pd.to_datetime(df["timestamp"], unit="s")
+        # Convert Unix timestamp to datetime (UTC), then convert to Asia/Kolkata
+        df["timestamp"] = pd.to_datetime(df["timestamp"], unit="s", utc=True)
+        df["timestamp"] = df["timestamp"].dt.tz_convert(KOLKATA_TZ)
         self._data = df
 
     def _enter_trade(self, bar: int, direction: int) -> None:
@@ -196,13 +202,32 @@ class SingleTimeframeBacktester:
         if not self._trades:
             return
 
-        output_path = self.config.trades_output or Path(
-            "src/strategy/runners/trades_Single_TF_default.csv"
-        )
+        # Get output path - resolve relative to project root if needed
+        if self.config.trades_output:
+            output_path = Path(self.config.trades_output)
+        else:
+            # Default: save in project root
+            # Find project root by looking for common markers
+            current = Path(__file__).resolve()
+            project_root = None
+            for parent in current.parents:
+                if (parent / "src" / "trading_system").exists():
+                    project_root = parent
+                    break
+            
+            if project_root:
+                output_path = project_root / "trades_Single_TF_default.csv"
+            else:
+                # Fallback: save in current directory
+                output_path = Path("trades_Single_TF_default.csv")
+        
+        # Ensure parent directory exists
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        
         rows = [
             {
-                "entry_time": trade.entry_time,
-                "exit_time": trade.exit_time,
+                "entry_time": trade.entry_time.strftime("%Y-%m-%d %H:%M:%S %Z") if trade.entry_time else "",
+                "exit_time": trade.exit_time.strftime("%Y-%m-%d %H:%M:%S %Z") if trade.exit_time else "",
                 "direction": "LONG" if trade.direction == 1 else "SHORT",
                 "entry_price": trade.entry_price,
                 "exit_price": trade.exit_price,
@@ -216,6 +241,7 @@ class SingleTimeframeBacktester:
         ]
         df = pd.DataFrame(rows)
         df.to_csv(output_path, index=False)
+        print(f"💾 Trades saved to: {output_path} (timestamps in Asia/Kolkata)")
 
 
 __all__ = ["SingleTimeframeBacktester"]

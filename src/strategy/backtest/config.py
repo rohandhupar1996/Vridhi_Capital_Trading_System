@@ -46,19 +46,9 @@ class BacktestConfig:
     ml_settings: TradingSettings = field(default_factory=lambda: TradingSettings())
     
     # ==== EXIT STRATEGY ====
-    exit_mode: str = 'default'  # 'default', 'volume', 'hybrid'
-    # 'default' - Fixed N-bar exit
-    # 'volume' - Volume node exit only
-    # 'hybrid' - Volume nodes + fallback to N-bar
+    exit_mode: str = 'default'  # 'default' - Fixed N-bar exit
     
-    default_exit_bars: int = 4  # Used in 'default' and 'hybrid' modes
-    
-    # Volume exit settings (for 'volume' and 'hybrid' modes)
-    volume_exit_directions: List[str] = field(default_factory=lambda: ['SHORT'])
-    # Options: ['LONG'], ['SHORT'], ['LONG', 'SHORT'], []
-    
-    volume_lookback: int = 360
-    volume_num_rows: int = 100
+    default_exit_bars: int = 4
     
     # ==== ADVANCED FEATURES ====
     track_drawdown: bool = True  # Calculate MFE/MAE
@@ -78,15 +68,11 @@ class BacktestConfig:
     
     def __post_init__(self):
         """Validate configuration"""
-        assert self.exit_mode in ['default', 'volume', 'hybrid'], \
-            f"Invalid exit_mode: {self.exit_mode}"
+        assert self.exit_mode == 'default', \
+            f"Invalid exit_mode: {self.exit_mode} (only 'default' supported)"
         
         assert self.primary_timeframe in ['15min', '1hour', '1min', '5min'], \
             f"Invalid timeframe: {self.primary_timeframe}"
-        
-        for direction in self.volume_exit_directions:
-            assert direction in ['LONG', 'SHORT'], \
-                f"Invalid direction: {direction}"
     
     def summary(self) -> str:
         """Print configuration summary"""
@@ -105,18 +91,8 @@ class BacktestConfig:
         lines.extend([
             f"  Lookback:         {self.lookback_bars} bars",
             f"\n🚪 EXIT STRATEGY:",
-            f"  Mode:             {self.exit_mode}",
+            f"  Exit after:       {self.default_exit_bars} bars",
         ])
-        
-        if self.exit_mode == 'default':
-            lines.append(f"  Exit after:       {self.default_exit_bars} bars")
-        elif self.exit_mode == 'volume':
-            lines.append(f"  Volume exit:      {', '.join(self.volume_exit_directions)}")
-        elif self.exit_mode == 'hybrid':
-            lines.extend([
-                f"  Volume exit:      {', '.join(self.volume_exit_directions)}",
-                f"  Fallback:         {self.default_exit_bars} bars"
-            ])
         
         lines.extend([
             f"\n⚙️  FEATURES:",
@@ -156,26 +132,14 @@ def get_config_single_tf_no_volume() -> BacktestConfig:
 
 
 def get_config_dual_tf_complete() -> BacktestConfig:
-    """Dual timeframe with volume exit for SHORT only (like complete_backtest.py)"""
+    """Dual timeframe with default exit"""
     return BacktestConfig(
         name="Dual TF - Complete",
         use_dual_timeframe=True,
-        exit_mode='hybrid',
+        exit_mode='default',
         default_exit_bars=4,
-        volume_exit_directions=['SHORT'],
         track_drawdown=True,
         use_repaint_detection=True
-    )
-
-
-def get_config_volume_both_directions() -> BacktestConfig:
-    """Volume exit for both LONG and SHORT"""
-    return BacktestConfig(
-        name="Volume Both Directions",
-        use_dual_timeframe=False,
-        exit_mode='volume',
-        volume_exit_directions=['LONG', 'SHORT'],
-        track_drawdown=True
     )
 
 
@@ -196,10 +160,6 @@ class ConfigBuilder:
         self.config.default_exit_bars = bars
         return self
     
-    def with_volume_exit(self, directions: List[str]) -> 'ConfigBuilder':
-        self.config.volume_exit_directions = directions
-        return self
-    
     def with_name(self, name: str) -> 'ConfigBuilder':
         self.config.name = name
         return self
@@ -218,7 +178,6 @@ if __name__ == "__main__":
         get_config_single_tf_default(),
         get_config_single_tf_no_volume(),
         get_config_dual_tf_complete(),
-        get_config_volume_both_directions()
     ]
     
     for cfg in configs:
@@ -232,8 +191,7 @@ if __name__ == "__main__":
     custom = (ConfigBuilder()
               .with_name("Custom Strategy")
               .with_dual_timeframe()
-              .with_exit_mode('hybrid', bars=6)
-              .with_volume_exit(['LONG', 'SHORT'])
+              .with_exit_mode('default', bars=6)
               .build())
     
     print(custom.summary())

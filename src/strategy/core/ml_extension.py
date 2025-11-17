@@ -120,10 +120,9 @@ def n_rsi(src: np.ndarray, n1: int, n2: int) -> np.ndarray:
     """
     Normalized RSI for ML (rescaled 0-1)
     """
-    with PerformanceTimer(f"n_rsi(n1={n1}, n2={n2})"):
-        rsi = calculate_rsi(src, n1)
-        ema_rsi = calculate_ema(rsi, n2)
-        normalized = rescale_series(ema_rsi, 0, 100, 0, 1)
+    rsi = calculate_rsi(src, n1)
+    ema_rsi = calculate_ema(rsi, n2)
+    normalized = rescale_series(ema_rsi, 0, 100, 0, 1)
     return normalized
 
 
@@ -151,10 +150,9 @@ def n_cci(src: np.ndarray, high: np.ndarray, low: np.ndarray, n1: int, n2: int) 
     """
     Normalized CCI for ML
     """
-    with PerformanceTimer(f"n_cci(n1={n1}, n2={n2})"):
-        cci = calculate_cci(src, high, low, n1)
-        ema_cci = calculate_ema(cci, n2)
-        normalized = normalize_series(ema_cci, 0, 1)
+    cci = calculate_cci(src, high, low, n1)
+    ema_cci = calculate_ema(cci, n2)
+    normalized = normalize_series(ema_cci, 0, 1)
     return normalized
 
 
@@ -162,18 +160,17 @@ def n_wt(src: np.ndarray, n1: int = 10, n2: int = 11) -> np.ndarray:
     """
     Normalized WaveTrend for ML
     """
-    with PerformanceTimer(f"n_wt(n1={n1}, n2={n2})"):
-        ema1 = calculate_ema(src, n1)
-        diff = np.abs(src - ema1)
-        ema2 = calculate_ema(diff, n1)
-        
-        ci = np.where(ema2 != 0, (src - ema1) / (0.015 * ema2), 0)
-        wt1 = calculate_ema(ci, n2)
-        
-        # SMA for wt2
-        wt2 = np.convolve(wt1, np.ones(4)/4, mode='same')
-        
-        normalized = normalize_series(wt1 - wt2, 0, 1)
+    ema1 = calculate_ema(src, n1)
+    diff = np.abs(src - ema1)
+    ema2 = calculate_ema(diff, n1)
+    
+    ci = np.where(ema2 != 0, (src - ema1) / (0.015 * ema2), 0)
+    wt1 = calculate_ema(ci, n2)
+    
+    # SMA for wt2
+    wt2 = np.convolve(wt1, np.ones(4)/4, mode='same')
+    
+    normalized = normalize_series(wt1 - wt2, 0, 1)
     return normalized
 
 
@@ -249,9 +246,8 @@ def n_adx(high: np.ndarray, low: np.ndarray, close: np.ndarray, n1: int) -> np.n
     """
     Normalized ADX for ML
     """
-    with PerformanceTimer(f"n_adx(n1={n1})"):
-        adx = calculate_adx(high, low, close, n1)
-        normalized = rescale_series(adx, 0, 100, 0, 1)
+    adx = calculate_adx(high, low, close, n1)
+    normalized = rescale_series(adx, 0, 100, 0, 1)
     return normalized
 
 
@@ -284,10 +280,9 @@ def filter_volatility(high: np.ndarray, low: np.ndarray, close: np.ndarray,
     """
     Volatility filter - returns boolean array
     """
-    with PerformanceTimer(f"filter_volatility(min={min_length}, max={max_length})"):
-        recent_atr = calculate_atr(high, low, close, min_length)
-        historical_atr = calculate_atr(high, low, close, max_length)
-        filter_pass = recent_atr > historical_atr
+    recent_atr = calculate_atr(high, low, close, min_length)
+    historical_atr = calculate_atr(high, low, close, max_length)
+    filter_pass = recent_atr > historical_atr
     return filter_pass
 
 
@@ -296,35 +291,34 @@ def regime_filter(high: np.ndarray, low: np.ndarray, close: np.ndarray, threshol
     Regime filter based on Kalman-like curve slope
     FIXED: Now uses (high - low) to match Pine Script exactly
     """
-    with PerformanceTimer(f"regime_filter(threshold={threshold})"):
-        n = len(close)
-        value1 = np.zeros(n)
-        value2 = np.zeros(n)
-        klmf = np.zeros(n)
-        
-        # Calculate price momentum
-        for i in range(2, n):
-            value1[i] = 0.2 * (close[i] - close[i-1]) + 0.8 * value1[i-1]
-        
-        # ✅ FIXED: Use actual (high - low) range
-        for i in range(1, n):
-            value2[i] = 0.1 * (high[i] - low[i]) + 0.8 * value2[i-1]
-        
-        # Kalman-like filter
-        for i in range(1, n):
-            omega = np.abs(value1[i] / value2[i]) if value2[i] != 0 else 0
-            alpha = (-omega**2 + np.sqrt(omega**4 + 16 * omega**2)) / 8 if omega != 0 else 0
-            klmf[i] = alpha * close[i] + (1 - alpha) * klmf[i-1]
-        
-        # Calculate normalized slope decline
-        abs_curve_slope = np.abs(np.diff(klmf, prepend=klmf[0]))
-        ema_slope = calculate_ema(abs_curve_slope, 200)
-        
-        normalized_slope = np.where(ema_slope != 0, 
-                                    (abs_curve_slope - ema_slope) / ema_slope,
-                                    0)
-        
-        filter_pass = normalized_slope >= threshold
+    n = len(close)
+    value1 = np.zeros(n)
+    value2 = np.zeros(n)
+    klmf = np.zeros(n)
+    
+    # Calculate price momentum
+    for i in range(2, n):
+        value1[i] = 0.2 * (close[i] - close[i-1]) + 0.8 * value1[i-1]
+    
+    # ✅ FIXED: Use actual (high - low) range
+    for i in range(1, n):
+        value2[i] = 0.1 * (high[i] - low[i]) + 0.8 * value2[i-1]
+    
+    # Kalman-like filter
+    for i in range(1, n):
+        omega = np.abs(value1[i] / value2[i]) if value2[i] != 0 else 0
+        alpha = (-omega**2 + np.sqrt(omega**4 + 16 * omega**2)) / 8 if omega != 0 else 0
+        klmf[i] = alpha * close[i] + (1 - alpha) * klmf[i-1]
+    
+    # Calculate normalized slope decline
+    abs_curve_slope = np.abs(np.diff(klmf, prepend=klmf[0]))
+    ema_slope = calculate_ema(abs_curve_slope, 200)
+    
+    normalized_slope = np.where(ema_slope != 0, 
+                                (abs_curve_slope - ema_slope) / ema_slope,
+                                0)
+    
+    filter_pass = normalized_slope >= threshold
     
     return filter_pass
 
@@ -334,9 +328,8 @@ def filter_adx(high: np.ndarray, low: np.ndarray, close: np.ndarray,
     """
     ADX filter - returns boolean array
     """
-    with PerformanceTimer(f"filter_adx(length={length}, threshold={threshold})"):
-        adx = calculate_adx(high, low, close, length)
-        filter_pass = adx > threshold
+    adx = calculate_adx(high, low, close, length)
+    filter_pass = adx > threshold
     return filter_pass
 
 

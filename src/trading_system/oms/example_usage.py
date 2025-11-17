@@ -7,13 +7,6 @@ from typing import Optional
 from ..broker.zerodha_auth import ZerodhaAuthenticator, ZerodhaCredentials
 from ..logging import ComponentLogger
 from .order_manager import OrderManager
-import yaml
-
-
-def load_config(config_path: str = "configs/config.yaml") -> dict:
-    """Load configuration from YAML file"""
-    with open(config_path, 'r') as f:
-        return yaml.safe_load(f)
 
 
 def initialize_oms() -> Optional[OrderManager]:
@@ -23,9 +16,11 @@ def initialize_oms() -> Optional[OrderManager]:
     Returns:
         OrderManager instance if successful, None otherwise
     """
-    # Load configuration
-    config = load_config()
-    oms_config = config.get('oms', {})
+    # OMS configuration (can be customized)
+    oms_config = {
+        'lot_size': 8,
+        'hedge_legs': 20,
+    }
     
     # Initialize logger
     logger = ComponentLogger.get_logger("oms_example")

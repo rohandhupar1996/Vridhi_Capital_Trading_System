@@ -32,12 +32,12 @@ class BacktestConfig:
 
     symbol: str = "BANKNIFTY1!"
     timeframe: str = "15min"
-    lookback_bars: int = 3_000
+    lookback_bars: int = 3000
     start_bar: int = 200
     default_exit_bars: int = 4
     initial_capital: float = 100_000.0
     neighbors_count: int = 5
-    max_bars_back: int = 3_000
+    max_bars_back: int = 3000
     use_kernel_filter: bool = True
     use_volatility_filter: bool = True
     use_regime_filter: bool = True

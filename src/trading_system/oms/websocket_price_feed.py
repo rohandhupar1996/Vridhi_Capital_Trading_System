@@ -69,12 +69,16 @@ class WebSocketPriceFeed:
             self.kws.on_close = self._on_close
             self.kws.on_error = self._on_error
             
-            # Subscribe to futures contract (LTP mode for price updates)
+            # Start WebSocket connection FIRST (non-blocking)
+            self.kws.connect(threaded=True)
+            
+            # Wait a moment for connection to establish
+            import time
+            time.sleep(1)
+            
+            # Then subscribe to futures contract (LTP mode for price updates)
             self.kws.subscribe([self.futures_token])
             self.kws.set_mode(self.kws.MODE_LTP, [self.futures_token])
-            
-            # Start WebSocket connection (non-blocking)
-            self.kws.connect(threaded=True)
             
             self.logger.info(
                 "WebSocket connection initiated",

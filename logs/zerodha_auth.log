@@ -1,8 +1,0 @@
-2025-11-17 00:53:07 | INFO     | Loaded saved access token from file
-2025-11-17 00:53:07 | INFO     | Initialized KiteConnect with saved access token
-2025-11-17 00:53:08 | INFO     | Generated login URL: https://kite.zerodha.com/connect/login?api_key=t2z5newnxxa7nkhs&v=3
-2025-11-17 00:53:33 | ERROR    | Authentication failed: Token is invalid or has expired.
-2025-11-17 00:54:28 | INFO     | Loaded saved access token from file
-2025-11-17 00:54:28 | INFO     | Initialized KiteConnect with saved access token
-2025-11-17 01:27:52 | INFO     | Loaded saved access token from file
-2025-11-17 01:27:52 | INFO     | Initialized KiteConnect with saved access token

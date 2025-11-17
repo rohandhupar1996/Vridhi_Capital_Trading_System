@@ -106,7 +106,7 @@ def main():
         print("❌ Authentication failed. Please run: python scripts/zerodha_login.py")
         return False
     
-    kite = authenticator.get_kite()
+    kite = authenticator.get_kite_instance()
     if not kite:
         print("❌ Failed to get Kite instance")
         return False
@@ -184,8 +184,7 @@ def main():
     # Initialize running signal executor
     print("\n🎯 Initializing signal executor...")
     executor = RunningSignalExecutor(
-        order_manager=oms,
-        timeframe_controller=timeframe_controller,
+        oms=oms,
         earnings_filter=earnings_filter,
         logger=ComponentLogger.get_logger("running_signal_executor")
     )

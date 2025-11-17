@@ -6,7 +6,12 @@ import sys
 from pathlib import Path
 from typing import List
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+# Fix path: file is at src/strategy/runners/run_single_tf.py
+# parents[0] = src/strategy/runners
+# parents[1] = src/strategy
+# parents[2] = src
+# parents[3] = project root
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 SRC_PATH = PROJECT_ROOT / "src"
 for path in (PROJECT_ROOT, SRC_PATH):
     if str(path) not in sys.path:

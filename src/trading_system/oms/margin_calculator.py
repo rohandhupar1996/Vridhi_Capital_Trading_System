@@ -91,8 +91,8 @@ class MarginCalculator:
             sell_pe_margin = (span_margin_per_lot + exposure_margin + atm_pe_price) * lot_size
             
             # BUY costs
-            buy_ce_cost = atm_ce_price * lot_size * 15  # 15 units per lot
-            buy_hedge_pe_cost = hedge_pe_price * lot_size * 15
+            buy_ce_cost = atm_ce_price * lot_size * 35  # 35 units per lot (BankNifty options)
+            buy_hedge_pe_cost = hedge_pe_price * lot_size * 35
             
             total_margin = sell_pe_margin + buy_ce_cost + buy_hedge_pe_cost
             
@@ -119,7 +119,7 @@ class MarginCalculator:
             self.logger.error(f"Error calculating LONG margin: {e}", exc_info=True)
             # Return conservative estimate
             return {
-                'total_margin': futures_price * 0.25 * lot_size * 15,  # 25% of futures per lot
+                'total_margin': futures_price * 0.25 * lot_size * 35,  # 25% of futures per lot (35 units per lot)
                 'sell_pe_margin': 0,
                 'buy_ce_cost': 0,
                 'buy_hedge_pe_cost': 0,
@@ -216,7 +216,7 @@ class MarginCalculator:
             self.logger.error(f"Error calculating SHORT margin: {e}", exc_info=True)
             # Return conservative estimate
             return {
-                'total_margin': futures_price * 0.25 * lot_size * 15,
+                'total_margin': futures_price * 0.25 * lot_size * 35,  # 35 units per lot
                 'sell_ce_margin': 0,
                 'buy_pe_cost': 0,
                 'buy_hedge_ce_cost': 0,

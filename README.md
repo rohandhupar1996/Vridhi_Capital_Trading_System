@@ -25,7 +25,7 @@ Complete order management system for BankNifty options trading with:
 - Handles partial fills gracefully
 - Complete position tracking and state management
 
-See `src/trading_system/oms/README.md` for detailed documentation.
+See `src/trading_system/oms/` for detailed code documentation.
 
 ### 2. Trading Strategy
 **Location**: `src/strategy/core/`
@@ -106,9 +106,8 @@ Edit `configs/config.yaml` to customize:
 
 ## Documentation
 
-- **OMS Documentation**: `src/trading_system/oms/README.md`
-- **Zerodha Integration**: `docs/ZERODHA_INTEGRATION.md`
 - **Example Usage**: `src/trading_system/oms/example_usage.py`
+- **Main Trading Script**: `scripts/simple_trading.py`
 
 ## Features
 

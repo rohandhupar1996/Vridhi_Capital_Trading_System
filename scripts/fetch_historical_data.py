@@ -17,34 +17,34 @@ for path in (PROJECT_ROOT, SRC_PATH):
     if str(path) not in sys.path:
         sys.path.insert(0, str(path))
 
+from typing import Optional
+
+import pandas as pd
 from tvDatafeed import Interval
 
 from src.trading_system.config import AppConfig, DataStoreConfig
 from src.trading_system.data import HistoricalDataCollector, TimeframeRequest
 
 
-def _resolve_credentials(config: DataStoreConfig) -> HistoricalDataCollector:
-    """Ensure credentials are available and return a collector instance."""
+def _resolve_credentials(config: DataStoreConfig) -> tuple[HistoricalDataCollector, Optional[str], Optional[str]]:
+    """Get credentials from .env file or prompt user."""
     collector = HistoricalDataCollector(config)
 
     if config.tv_username and config.tv_password:
-        print(f"✅ Using credentials for: {config.tv_username}")
-        return collector
+        return collector, config.tv_username, config.tv_password
 
     if not sys.stdin.isatty():
         print("⚠️  TradingView credentials not found; proceeding with no-login session.")
-        config.tv_username = None
-        config.tv_password = None
-        return collector
+        return collector, None, None
 
-    print("⚠️  TradingView credentials not found in environment.")
-    username = input("    Username (leave blank for no-login): ").strip()
+    print("⚠️  TradingView credentials not found in configs/.env")
+    username = input("\n    Username (press Enter to skip): ").strip()
     password = ""
     if username:
         password = getpass.getpass("    Password: ")
     config.tv_username = username or None
     config.tv_password = password or None
-    return collector
+    return collector, username or None, password or None
 
 
 def _print_collection_summary(results: list[tuple[str, bool]]) -> None:
@@ -80,20 +80,31 @@ def main() -> None:
     app_config = AppConfig()
     data_config = app_config.data
 
-    collector = _resolve_credentials(data_config)
+    collector, username, password = _resolve_credentials(data_config)
     collector.setup_database()
     print(f"📁 Database location: {app_config.resolve_path(data_config.db_path)}")
 
-    if not collector.connect_tradingview():
+    # Try login - if it fails, ask for manual credentials
+    if not collector.connect_tradingview(username=username, password=password):
+        if sys.stdin.isatty() and username and password:
+            print("\n⚠️  Login failed with provided credentials.")
+            retry = input("    Enter credentials manually? (y/n): ").strip().lower()
+            if retry == 'y':
+                username = input("    Username: ").strip()
+                password = getpass.getpass("    Password: ")
+                if username and password:
+                    print("\n🔐 Retrying login with manual credentials...")
+                    collector.connect_tradingview(username=username, password=password)
+        
         print("\n⚠️  Running in no-login mode; data coverage may be limited.")
 
     print("\n🔄 Starting data collection...")
     print("    This will take approximately 30-60 seconds...")
 
     requests = [
-        TimeframeRequest("5min", Interval.in_5_minute, 10_000),
-        TimeframeRequest("15min", Interval.in_15_minute, 10_000),
-        TimeframeRequest("1hour", Interval.in_1_hour, 10_000),
+        TimeframeRequest("5min", Interval.in_5_minute, 6000),
+        TimeframeRequest("15min", Interval.in_15_minute, 6000),
+        TimeframeRequest("1hour", Interval.in_1_hour, 6000),
     ]
 
     results = collector.fetch_timeframes(
@@ -107,6 +118,49 @@ def main() -> None:
 
     if any(success for _, success in results):
         _print_db_stats(collector, app_config.resolve_path(data_config.db_path))
+        
+        # Validate data completeness
+        print(f"\n{'='*60}")
+        print("🔍 DATA COMPLETENESS VALIDATION")
+        print(f"{'='*60}")
+        symbol = "BANKNIFTY1!"
+        all_valid = True
+        
+        for req in requests:
+            validation = collector.validate_data_completeness(
+                symbol=symbol,
+                timeframe=req.name,
+                expected_bars=req.bars
+            )
+            
+            status_icon = "✅" if validation["valid"] else "⚠️"
+            print(f"\n{status_icon} {req.name.upper()}:")
+            print(f"   Expected bars: {validation['expected_bars']}")
+            print(f"   Received bars: {validation['received_bars']}")
+            print(f"   Completeness: {validation['completeness_percent']:.1f}%")
+            print(f"   Date range: {validation['earliest_date'].date()} to {validation['latest_date'].date()}")
+            print(f"   Latest date is up-to-date: {'✅ Yes' if validation['is_up_to_date'] else '❌ No'}")
+            print(f"   Gaps detected: {validation['gaps_count']}")
+            
+            if not validation["valid"]:
+                all_valid = False
+                if validation['completeness_percent'] < 90:
+                    print(f"   ⚠️  Warning: Received less than 90% of requested bars!")
+                if not validation['is_up_to_date']:
+                    days_behind = (pd.Timestamp.now().normalize() - validation['latest_date'].normalize()).days
+                    print(f"   ⚠️  Warning: Data is {days_behind} day(s) behind current date!")
+                if validation['gaps_count'] > 0:
+                    print(f"   ⚠️  Warning: {validation['gaps_count']} gap(s) found in time series!")
+        
+        if all_valid:
+            print(f"\n{'='*60}")
+            print("✅ ALL DATA VALIDATION CHECKS PASSED!")
+            print(f"{'='*60}")
+        else:
+            print(f"\n{'='*60}")
+            print("⚠️  SOME DATA VALIDATION CHECKS FAILED")
+            print("   Please review warnings above")
+            print(f"{'='*60}")
     else:
         print("\n⚠️  No data collected. Please check errors above.")
 

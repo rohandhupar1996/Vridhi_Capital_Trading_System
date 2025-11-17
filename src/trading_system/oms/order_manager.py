@@ -4,7 +4,7 @@ Handles entry, exit, SL with margin management and sequential lot reduction
 """
 
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
@@ -121,6 +121,174 @@ class OrderManager:
         
         symbol = f"BANKNIFTY{year_suffix}{month}FUT"
         return symbol
+    
+    def _get_option_expiry_date(self) -> Optional[str]:
+        """
+        Get current month BankNifty option expiry date from Zerodha instruments
+        Returns format: DDMMM (e.g., 25NOV) or None if not found
+        """
+        try:
+            # Get all BankNifty options from Zerodha
+            instruments = self.kite.instruments("NFO")
+            
+            # Filter for BankNifty options (CE or PE) for current month
+            now = datetime.now()
+            current_month = now.month
+            current_year = now.year
+            
+            # Find all unique expiry dates for BankNifty options
+            expiry_dates = set()
+            for inst in instruments:
+                if (inst.get('name') == 'BANKNIFTY' and 
+                    inst.get('instrument_type') in ['CE', 'PE']):
+                    expiry = inst.get('expiry')
+                    if expiry:
+                        # Parse expiry date
+                        try:
+                            exp_date = datetime.strptime(expiry, '%Y-%m-%d')
+                            # Check if it's in current month
+                            if exp_date.month == current_month and exp_date.year == current_year:
+                                expiry_dates.add(exp_date)
+                        except (ValueError, TypeError):
+                            continue
+            
+            if not expiry_dates:
+                # Fallback to calculated last Thursday
+                self.logger.warning("No expiry found in instruments, using calculated last Thursday")
+                return self._calculate_last_thursday()
+            
+            # Get the latest expiry date (should be the monthly expiry)
+            latest_expiry = max(expiry_dates)
+            
+            month_map = {
+                1: 'JAN', 2: 'FEB', 3: 'MAR', 4: 'APR',
+                5: 'MAY', 6: 'JUN', 7: 'JUL', 8: 'AUG',
+                9: 'SEP', 10: 'OCT', 11: 'NOV', 12: 'DEC'
+            }
+            
+            day = str(latest_expiry.day).zfill(2)
+            month = month_map[latest_expiry.month]
+            
+            expiry_str = f"{day}{month}"
+            self.logger.info(f"Found option expiry from Zerodha: {expiry_str} ({latest_expiry.date()})")
+            return expiry_str
+            
+        except Exception as e:
+            self.logger.error(f"Error getting expiry from Zerodha: {e}", exc_info=True)
+            # Fallback to calculated last Thursday
+            return self._calculate_last_thursday()
+    
+    def _calculate_last_thursday(self) -> str:
+        """Fallback: Calculate last Thursday of current month"""
+        from calendar import monthrange
+        
+        now = datetime.now()
+        last_day = monthrange(now.year, now.month)[1]
+        last_date = datetime(now.year, now.month, last_day)
+        
+        days_back = (last_date.weekday() - 3) % 7
+        if days_back == 0 and last_date.weekday() != 3:
+            days_back = 7
+        
+        expiry_date = last_date - timedelta(days=days_back)
+        
+        month_map = {
+            1: 'JAN', 2: 'FEB', 3: 'MAR', 4: 'APR',
+            5: 'MAY', 6: 'JUN', 7: 'JUL', 8: 'AUG',
+            9: 'SEP', 10: 'OCT', 11: 'NOV', 12: 'DEC'
+        }
+        
+        day = str(expiry_date.day).zfill(2)
+        month = month_map[expiry_date.month]
+        
+        return f"{day}{month}"
+    
+    def _get_option_symbol(self, strike: int, option_type: str) -> Optional[str]:
+        """
+        Get correct option symbol with expiry date from Zerodha instruments
+        
+        Args:
+            strike: Strike price (e.g., 59000)
+            option_type: 'CE' or 'PE'
+            
+        Returns:
+            Trading symbol (e.g., 'BANKNIFTY25NOV59000CE') or None if not found
+        """
+        try:
+            # Get expiry date
+            expiry = self._get_option_expiry_date()
+            
+            # Try to find instrument from Zerodha
+            instruments = self.kite.instruments("NFO")
+            
+            # Search for matching option
+            # Zerodha format: BANKNIFTY{DD}{MMM}{YY}{STRIKE}{CE/PE}
+            # Example: BANKNIFTY27NOV2559000CE (27 Nov 2025, strike 59000, CE)
+            year_suffix = str(datetime.now().year)[2:]
+            
+            # First, try to find by matching strike and option type, then check expiry
+            matching_instruments = []
+            for inst in instruments:
+                if (inst.get('name') == 'BANKNIFTY' and 
+                    inst.get('instrument_type') == option_type and
+                    inst.get('strike') == float(strike)):
+                    matching_instruments.append(inst)
+            
+            # Filter by expiry date (should match our calculated expiry)
+            for inst in matching_instruments:
+                tradingsymbol = inst.get('tradingsymbol', '')
+                # Check if expiry string is in the symbol
+                if expiry in tradingsymbol:
+                    self.logger.info(
+                        f"Found option symbol: {tradingsymbol}",
+                        strike=strike,
+                        option_type=option_type,
+                        expiry_date=inst.get('expiry')
+                    )
+                    return tradingsymbol
+            
+            # If no exact expiry match, try constructed pattern
+            patterns = [
+                f"BANKNIFTY{expiry}{year_suffix}{strike}{option_type}",  # BANKNIFTY27NOV2559000CE
+            ]
+            
+            for pattern in patterns:
+                for inst in instruments:
+                    if inst.get('tradingsymbol') == pattern:
+                        self.logger.info(
+                            f"Found option symbol by pattern: {inst['tradingsymbol']}",
+                            strike=strike,
+                            option_type=option_type
+                        )
+                        return inst['tradingsymbol']
+            
+            # If still not found, use first matching instrument (fallback)
+            if matching_instruments:
+                fallback_symbol = matching_instruments[0].get('tradingsymbol')
+                self.logger.warning(
+                    f"Using fallback option symbol: {fallback_symbol}",
+                    strike=strike,
+                    option_type=option_type,
+                    note="Expiry may not match exactly"
+                )
+                return fallback_symbol
+            
+            # Last resort: construct symbol
+            symbol = f"BANKNIFTY{expiry}{year_suffix}{strike}{option_type}"
+            self.logger.error(
+                f"Option symbol not found in instruments, using constructed: {symbol}",
+                strike=strike,
+                option_type=option_type,
+                warning="This will likely fail - check instrument list"
+            )
+            return symbol
+            
+        except Exception as e:
+            self.logger.error(f"Error getting option symbol: {e}", exc_info=True)
+            # Fallback: construct symbol without verification
+            expiry = self._get_option_expiry_date()
+            year_suffix = str(datetime.now().year)[2:]
+            return f"BANKNIFTY{expiry}{year_suffix}{strike}{option_type}"
     
     def update_futures_price(self, tick: Dict) -> None:
         """
@@ -339,16 +507,24 @@ class OrderManager:
         while current_lot_size > 0:
             try:
                 # Step 1: Execute all BUY legs first
+                # Get correct option symbols with expiry
+                atm_ce_symbol = self._get_option_symbol(atm_strike, "CE")
+                hedge_pe_symbol = self._get_option_symbol(hedge_strike, "PE")
+                
+                if not atm_ce_symbol or not hedge_pe_symbol:
+                    self.logger.error("Failed to get option symbols")
+                    return False
+                
                 buy_legs = [
                     OrderLeg(
-                        symbol=f"BANKNIFTY{atm_strike}CE",
-                        quantity=current_lot_size * 15,  # 15 units per lot
+                        symbol=atm_ce_symbol,
+                        quantity=current_lot_size * 35,  # 35 units per lot (BankNifty options)
                         transaction_type="BUY",
                         leg_type="main"
                     ),
                     OrderLeg(
-                        symbol=f"BANKNIFTY{hedge_strike}PE",
-                        quantity=current_lot_size * 15,
+                        symbol=hedge_pe_symbol,
+                        quantity=current_lot_size * 35,  # 35 units per lot
                         transaction_type="BUY",
                         leg_type="hedge"
                     )
@@ -365,10 +541,15 @@ class OrderManager:
                     continue
                 
                 # Step 2: Execute SELL leg after buys complete
+                atm_pe_symbol = self._get_option_symbol(atm_strike, "PE")
+                if not atm_pe_symbol:
+                    self.logger.error("Failed to get ATM PE symbol")
+                    return False
+                
                 sell_legs = [
                     OrderLeg(
-                        symbol=f"BANKNIFTY{atm_strike}PE",
-                        quantity=current_lot_size * 15,
+                        symbol=atm_pe_symbol,
+                        quantity=current_lot_size * 35,  # 35 units per lot
                         transaction_type="SELL",
                         leg_type="short"
                     )
@@ -470,16 +651,24 @@ class OrderManager:
         while current_lot_size > 0:
             try:
                 # Step 1: Execute all BUY legs first
+                # Get correct option symbols with expiry
+                atm_pe_symbol = self._get_option_symbol(atm_strike, "PE")
+                hedge_ce_symbol = self._get_option_symbol(hedge_strike, "CE")
+                
+                if not atm_pe_symbol or not hedge_ce_symbol:
+                    self.logger.error("Failed to get option symbols")
+                    return False
+                
                 buy_legs = [
                     OrderLeg(
-                        symbol=f"BANKNIFTY{atm_strike}PE",
-                        quantity=current_lot_size * 15,
+                        symbol=atm_pe_symbol,
+                        quantity=current_lot_size * 35,  # 35 units per lot
                         transaction_type="BUY",
                         leg_type="main"
                     ),
                     OrderLeg(
-                        symbol=f"BANKNIFTY{hedge_strike}CE",
-                        quantity=current_lot_size * 15,
+                        symbol=hedge_ce_symbol,
+                        quantity=current_lot_size * 35,  # 35 units per lot
                         transaction_type="BUY",
                         leg_type="hedge"
                     )
@@ -494,10 +683,15 @@ class OrderManager:
                     continue
                 
                 # Step 2: Execute SELL leg after buys complete
+                atm_ce_symbol = self._get_option_symbol(atm_strike, "CE")
+                if not atm_ce_symbol:
+                    self.logger.error("Failed to get ATM CE symbol")
+                    return False
+                
                 sell_legs = [
                     OrderLeg(
-                        symbol=f"BANKNIFTY{atm_strike}CE",
-                        quantity=current_lot_size * 15,
+                        symbol=atm_ce_symbol,
+                        quantity=current_lot_size * 35,  # 35 units per lot
                         transaction_type="SELL",
                         leg_type="short"
                     )

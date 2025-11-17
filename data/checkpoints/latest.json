@@ -1,0 +1,16 @@
+{
+  "futures_ltp": 59023.0,
+  "futures_token": null,
+  "last_tick_time": "2025-11-17T10:47:00.109829",
+  "effective_timeframe": "15min",
+  "is_expiry_day": false,
+  "earnings_blocked": false,
+  "available_margin": 1383273.1,
+  "pre_calculated_margins": null,
+  "current_position": null,
+  "auth_status": "connected",
+  "websocket_connected": true,
+  "last_heartbeat": "2025-11-17T10:46:59.504320",
+  "trading_enabled": true,
+  "read_only_mode": false
+}
