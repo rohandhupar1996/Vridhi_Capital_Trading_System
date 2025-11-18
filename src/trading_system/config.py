@@ -47,6 +47,7 @@ class BacktestConfig:
     verbose: bool = True
     # Optional output overrides
     trades_output: Optional[Path] = None
+    table_name: str = "ohlcv"  # Use "ohlcv_zerodha" for Zerodha data
 
 
 @dataclass(slots=True)

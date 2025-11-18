@@ -128,7 +128,21 @@ def _print_detailed_summary(metrics: dict, trades: List) -> None:
 
 
 if __name__ == "__main__":
+    import sys
+    
     app_config = AppConfig()
+    
+    # Check if user wants to use Zerodha data (passed as argument or env var)
+    use_zerodha = len(sys.argv) > 1 and sys.argv[1] == "--zerodha"
+    
+    if use_zerodha:
+        # Override config for Zerodha data
+        app_config.backtest.table_name = "ohlcv_zerodha"
+        app_config.backtest.symbol = "BANKNIFTY25NOVFUT"  # Will be dynamically set
+        app_config.backtest.timeframe = "15min"
+        print(f"🔷 Using Zerodha data: {app_config.backtest.table_name}")
+        print(f"   Symbol: {app_config.backtest.symbol}")
+        print(f"   Timeframe: {app_config.backtest.timeframe}\n")
 
     backtester = SingleTimeframeBacktester(
         config=app_config.backtest,

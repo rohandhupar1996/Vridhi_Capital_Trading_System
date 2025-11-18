@@ -454,12 +454,17 @@ def main():
         logger.error(f"Error fetching futures contract: {e}", exc_info=True)
         return 1
     
-    # Calculate date range (November 1st to today)
-    to_date = datetime.now(KOLKATA_TZ)
-    from_date = datetime(2025, 11, 1, 9, 15, 0, tzinfo=KOLKATA_TZ)  # Nov 1, 2025 at market open
+    # Calculate date range (1st of current month to today, including today)
+    now = datetime.now(KOLKATA_TZ)
+    from_date = datetime(now.year, now.month, 1, 9, 15, 0, tzinfo=KOLKATA_TZ)  # 1st of current month at market open
+    to_date = now  # Include all data up to current moment (includes today)
+    
+    month_name = from_date.strftime('%B %Y')
+    today_date = now.strftime('%Y-%m-%d')
     
     print(f"📅 Date range: {from_date.strftime('%Y-%m-%d %H:%M:%S %Z')} to {to_date.strftime('%Y-%m-%d %H:%M:%S %Z')}")
-    print(f"   Fetching November 2025 data only...")
+    print(f"   Fetching {month_name} data (including today: {today_date})")
+    print(f"   Contract: Current month's expiry ({futures_symbol})")
     print()
     
     # Timeframes to fetch (display_name, api_interval)
@@ -470,10 +475,12 @@ def main():
     ]
     
     db_path = Path(data_config.db_path)
-    table_name = "zerodha_candles"  # New separate table for Zerodha data
+    table_name = "ohlcv_zerodha"  # Store in ohlcv_zerodha table (same as LiveDataManager uses)
     
     print(f"📈 Fetching historical data...")
-    print(f"   Storing in NEW table: {table_name}")
+    print(f"   Contract: {futures_symbol}")
+    print(f"   Table: {table_name}")
+    print(f"   Month: {month_name}")
     print("    This may take a few minutes...")
     print()
     

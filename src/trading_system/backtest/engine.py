@@ -107,9 +107,16 @@ class SingleTimeframeBacktester:
     # Internal helpers
     # ------------------------------------------------------------------
     def _load_data(self) -> None:
+        # Use ohlcv_zerodha table if available (for Zerodha data), otherwise ohlcv (TradingView data)
+        table_name = getattr(self.config, 'table_name', 'ohlcv')
+        # Validate table name to prevent SQL injection (only allow known safe table names)
+        allowed_tables = {'ohlcv', 'ohlcv_zerodha'}
+        if table_name not in allowed_tables:
+            raise ValueError(f"Invalid table name: {table_name}. Allowed: {allowed_tables}")
+        
         query = (
             "SELECT timestamp, open, high, low, close, volume "
-            "FROM ohlcv WHERE symbol = ? AND timeframe = ? "
+            f"FROM {table_name} WHERE symbol = ? AND timeframe = ? "
             "ORDER BY timestamp DESC LIMIT ?"
         )
         with sqlite3.connect(self.db_path) as conn:
