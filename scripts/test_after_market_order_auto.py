@@ -37,8 +37,17 @@ from trading_system.data.zerodha_futures_utils import (
 from src.trading_system.oms.option_chain_manager import OptionChainManager
 from src.trading_system.oms.order_manager import OrderManager, OrderStatus
 
-# Load environment
-load_dotenv()
+# Load environment - check both locations
+env_paths = [
+    PROJECT_ROOT / ".env",
+    PROJECT_ROOT / "configs" / ".env"
+]
+for env_path in env_paths:
+    if env_path.exists():
+        load_dotenv(env_path)
+        break
+else:
+    load_dotenv()  # Try default .env location
 
 # Setup logging
 setup_logging()
@@ -117,8 +126,19 @@ def test_after_market_order_auto():
             api_key=api_key,
             api_secret=api_secret
         )
-        authenticator = ZerodhaAuthenticator(credentials, logger)
-        kite = authenticator.get_authenticated_kite()
+        # Initialize authenticator with proper token file path
+        token_file = PROJECT_ROOT / "configs" / "zerodha_tokens.json"
+        authenticator = ZerodhaAuthenticator(
+            credentials=credentials,
+            token_file=token_file,
+            logger=logger
+        )
+        # Get kite instance - check if authenticated first
+        if authenticator.is_token_valid():
+            kite = authenticator.get_kite_instance()
+        else:
+            print("❌ No valid token found. Please run zerodha_login.py first")
+            return test_results
         
         if not kite:
             print("❌ Authentication failed")
@@ -194,7 +214,8 @@ def test_after_market_order_auto():
             dry_run=True  # DRY-RUN mode (no real orders)
         )
         
-        oms.update_futures_price(futures_ltp)
+        # Set futures LTP directly (don't use update_futures_price which expects tick data)
+        oms.futures_ltp = futures_ltp
         oms.option_chain_manager = option_chain_manager
         
         print("✅ Order Manager initialized (DRY-RUN mode)")
