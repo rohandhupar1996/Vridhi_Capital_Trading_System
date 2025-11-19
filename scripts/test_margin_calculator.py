@@ -5,15 +5,22 @@ Tests the MarginCalculator component:
 - calculate_long_margin() for 3-leg position (SELL PE, BUY CE, BUY Hedge PE)
 - calculate_short_margin() for 3-leg position (SELL CE, BUY PE, BUY Hedge CE)
 - Basket order margins API call
-- Margin reduction with hedging (spread benefit ~63%)
+- Margin reduction with hedging (spread benefit verification)
 - Sequential lot reduction (if margin insufficient)
 - Fallback margin calculations
 - Available margin checking
 
-Real Trading:
+IMPORTANT NOTE:
+- Tests use MOCK Zerodha API responses - NOT real margin amounts
+- Real Zerodha API may return different margins (e.g., ~₹9.72L for 8 lots)
+- This test verifies the LOGIC works (basket API integration, spread benefit exists), not exact numbers
+- Actual margin amounts need to be verified with real Zerodha API calls
+
+Real Trading Parameters:
 - LOT size: 8 lots
 - Hedge legs: 20 (2000 points away)
-- Basket margins API: ~₹8.5L for 8 lots (with spread benefit)
+- Real margin from Zerodha: ~₹9.72L for 8 lots (verified from actual API)
+- Basket margins API provides spread benefit (reduction with hedging)
 """
 
 import sys
@@ -329,10 +336,12 @@ def test_margin_reduction_with_hedging():
     
     mock_kite = MockKiteForMargin()
     
-    # Set up basket margins with significant spread benefit
+    # NOTE: This uses MOCK data - NOT real Zerodha API responses
+    # Real margins from Zerodha API may be different (e.g., ~₹9.72L for 8 lots)
+    # This test verifies the LOGIC works (basket API returns spread benefit), not exact numbers
     mock_kite.basket_margins_data = {
-        'initial': {'total': 1000000.0},  # Without hedging
-        'final': {'total': 370000.0},     # With hedging (63% reduction)
+        'initial': {'total': 1000000.0},  # Without hedging (mock)
+        'final': {'total': 370000.0},     # With hedging (mock - 63% reduction)
         'orders': []
     }
     
@@ -344,7 +353,9 @@ def test_margin_reduction_with_hedging():
     )
     
     print(f"\n🔧 Testing margin reduction with hedging:")
-    print(f"   Expected: ~63% reduction with 3-leg hedge position")
+    print(f"   NOTE: Uses MOCK data - verifies LOGIC, not exact numbers")
+    print(f"   Real Zerodha API may return different margins (e.g., ~₹9.72L for 8 lots)")
+    print(f"   This test confirms: Basket API returns spread benefit (initial vs final)")
     
     result = margin_calc.calculate_long_margin(
         atm_strike=57300,
@@ -361,16 +372,19 @@ def test_margin_reduction_with_hedging():
         if initial > 0:
             reduction_pct = (spread_benefit / initial) * 100
             
-            print(f"   Initial margin (without hedge): ₹{initial:,.2f}")
-            print(f"   Final margin (with hedge): ₹{final:,.2f}")
-            print(f"   Spread benefit: ₹{spread_benefit:,.2f} ({reduction_pct:.1f}% reduction)")
+            print(f"   Mock Initial margin (individual sum): ₹{initial:,.2f}")
+            print(f"   Mock Final margin (with spread): ₹{final:,.2f}")
+            print(f"   Mock Spread benefit: ₹{spread_benefit:,.2f} ({reduction_pct:.1f}% reduction)")
             
-            if reduction_pct > 30:
-                print(f"   ✅ Significant margin reduction achieved ({reduction_pct:.1f}%)")
+            # Verify that basket API returns both initial and final (spread benefit exists)
+            if final < initial and final > 0:
+                print(f"   ✅ Basket API returns spread benefit (final < initial)")
+                print(f"   ✅ LOGIC verified: Basket API considers hedging for margin reduction")
+                print(f"   ⚠️  NOTE: Actual Zerodha margins may differ - verify with real API calls")
                 return True
             else:
-                print(f"   ⚠️  Lower reduction than expected ({reduction_pct:.1f}%)")
-                return True  # Still valid
+                print(f"   ❌ No spread benefit detected (final >= initial)")
+                return False
         else:
             print(f"   ❌ Initial margin is zero")
             return False
@@ -672,11 +686,15 @@ def main():
         print("✅ LONG margin calculation (3-leg: SELL PE, BUY CE, BUY Hedge PE)")
         print("✅ SHORT margin calculation (3-leg: SELL CE, BUY PE, BUY Hedge CE)")
         print("✅ Basket margins API integration (with spread benefit)")
-        print("✅ Margin reduction with hedging (~63% reduction)")
+        print("✅ Margin reduction with hedging (LOGIC verified - spread benefit exists)")
         print("✅ Fallback margin calculation (when API unavailable)")
         print("✅ Available margin checking")
         print("✅ Pre-calculation for daily trading")
         print("✅ Margin scaling with lot size")
+        print()
+        print("⚠️  NOTE: Tests use MOCK data - actual Zerodha margins may differ")
+        print("   Real margin from Zerodha API: ~₹9.72L for 8 lots (verified)")
+        print("   Test verifies LOGIC (basket API, spread benefit) not exact numbers")
         print()
         return 0
     else:
