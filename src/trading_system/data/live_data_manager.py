@@ -209,6 +209,58 @@ class LiveDataManager:
             new_symbol=new_symbol
         )
     
+    def check_and_update_contract_rollover(self, kite) -> bool:
+        """
+        Check contract expiry from option chain and update symbol if rollover needed.
+        
+        Rollover Logic:
+        - Gets expiry date from option chain (BANKNIFTY CE/PE options) - source of truth
+        - If today is AFTER expiry date, switch to next contract
+        - Example: Nov expiry on Nov 25 (from option chain), on Nov 26 switch to DEC
+        - NO hardcoded day of week - uses actual expiry date from option chain
+        
+        Args:
+            kite: Authenticated KiteConnect instance
+            
+        Returns:
+            True if rollover happened, False otherwise
+        """
+        try:
+            from .zerodha_futures_utils import get_futures_symbol_with_rollover
+            
+            # Get symbol with rollover logic (uses option chain expiry)
+            new_symbol, new_token, expiry_date = get_futures_symbol_with_rollover(kite)
+            
+            if not new_symbol:
+                self.logger.warning("Could not get futures symbol with rollover")
+                return False
+            
+            # Check if symbol needs to be updated
+            if new_symbol != self.symbol:
+                old_symbol = self.symbol
+                self.update_symbol(new_symbol)
+                
+                self.logger.info(
+                    f"Contract rollover executed",
+                    old_symbol=old_symbol or "NONE",
+                    new_symbol=new_symbol,
+                    expiry_date=expiry_date.isoformat() if expiry_date else "UNKNOWN",
+                    reason="Expiry passed, switched to next contract"
+                )
+                return True
+            else:
+                # Same symbol, no rollover needed
+                self.logger.debug(
+                    f"No rollover needed",
+                    current_symbol=self.symbol,
+                    expiry_date=expiry_date.isoformat() if expiry_date else "UNKNOWN"
+                )
+                return False
+                
+        except Exception as e:
+            self.logger.error(f"Error checking contract rollover: {e}", exc_info=True)
+            return False
+    
     def add_new_bar(
         self, 
         timestamp: datetime,
