@@ -75,8 +75,8 @@ class ExitStrategyManager:
                 return True, "repaint"
         
         # Priority 2: Default N-bar exit
-            if self._check_default_exit(trade, data):
-                return True, f"{self.config.default_exit_bars}_bars"
+        if self._check_default_exit(trade, data):
+            return True, f"{self.config.default_exit_bars}_bars"
         
         return False, ""
     
