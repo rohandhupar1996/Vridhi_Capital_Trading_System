@@ -147,3 +147,6 @@ class HistoricalDataLoader:
         """Check if data is loaded"""
         return self.data is not None and not self.data.empty
 
+
+
+

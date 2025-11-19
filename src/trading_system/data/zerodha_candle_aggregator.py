@@ -69,27 +69,22 @@ class ZerodhaCandleAggregator:
             self.symbol = "BANKNIFTY1!"
             self.logger.warning(f"No kite instance provided, using default symbol: {self.symbol}")
         
-        # Live data managers for each timeframe (rolling buffers)
+        # Live data managers for 15min timeframe only (rolling buffers)
         # use_zerodha_table=True to store in ohlcv_zerodha table
         # All contracts stored in same table for continuous data stream
+        # Volume profile requires 15min candles for optimal performance
         self.managers: Dict[str, LiveDataManager] = {
-            '5min': LiveDataManager(config, self.symbol, '5min', max_bars_back=3000, use_zerodha_table=True, logger=logger),
             '15min': LiveDataManager(config, self.symbol, '15min', max_bars_back=3000, use_zerodha_table=True, logger=logger),
-            '1hour': LiveDataManager(config, self.symbol, '1hour', max_bars_back=3000, use_zerodha_table=True, logger=logger),
         }
         
-        # Running candles for each timeframe (current candle being formed)
+        # Running candles for 15min timeframe (current candle being formed)
         self.running_candles: Dict[str, Optional[RunningCandle]] = {
-            '5min': None,
             '15min': None,
-            '1hour': None,
         }
         
-        # Timeframe intervals in minutes
+        # Timeframe intervals in minutes (15min only)
         self.intervals = {
-            '5min': 5,
             '15min': 15,
-            '1hour': 60,
         }
     
     def initialize(self) -> bool:
@@ -108,10 +103,11 @@ class ZerodhaCandleAggregator:
         timestamp: Optional[datetime] = None
     ) -> Dict[str, Optional[OHLCVBar]]:
         """
-        Process new tick data and update all timeframes.
+        Process new tick data and update 15min timeframe.
+        Aggregates volume from ticks and stores to ohlcv_zerodha table when candle completes.
         
         Returns:
-            Dict of completed candles: {'5min': OHLCVBar or None, '15min': ..., '1hour': ...}
+            Dict of completed candles: {'15min': OHLCVBar or None}
             None means candle is still running (not closed yet)
         """
         if timestamp is None:

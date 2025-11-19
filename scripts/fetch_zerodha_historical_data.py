@@ -467,11 +467,10 @@ def main():
     print(f"   Contract: Current month's expiry ({futures_symbol})")
     print()
     
-    # Timeframes to fetch (display_name, api_interval)
+    # Timeframes to fetch (15min only for volume profile analysis)
+    # Note: Volume profile requires 15min candles for optimal performance
     timeframes = [
-        ('5min', '5minute'),
         ('15min', '15minute'),
-        ('1hour', '60minute'),
     ]
     
     db_path = Path(data_config.db_path)

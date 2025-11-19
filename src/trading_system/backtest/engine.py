@@ -14,6 +14,7 @@ from src.strategy.core.trading_system import (  # type: ignore[import]
     TradingSettings,
 )
 from src.strategy.backtest.metrics import MetricsCalculator  # type: ignore[import]
+from src.strategy.backtest.volume_node_exit import VolumeNodeExitStrategy  # type: ignore[import]
 from src.trading_system.config import BacktestConfig
 from src.trading_system.backtest.models import ExitReason, Trade
 
@@ -32,6 +33,15 @@ class ExitController:
         if held >= self._bars:
             return True, f"{self._bars}_bars"
         return False, ""
+    
+    def should_exit_with_price(
+        self, trade: Trade, current_bar: int, historical_data: pd.DataFrame
+    ) -> tuple[bool, str, Optional[float]]:
+        """Check exit with optional price override (for volume exits)."""
+        held = current_bar - trade.entry_bar
+        if held >= self._bars:
+            return True, f"{self._bars}_bars", None
+        return False, "", None
 
 
 class SingleTimeframeBacktester:
@@ -44,15 +54,52 @@ class SingleTimeframeBacktester:
         self._current_trade: Optional[Trade] = None
         self._data: Optional[pd.DataFrame] = None
 
-        self._exit = ExitController(config.default_exit_bars)
+        # Initialize exit strategy based on config
+        # Support both new and legacy exit mode names
+        exit_mode = config.exit_mode
+        
+        # Map legacy names to new names
+        legacy_map = {
+            'default': '4bar_only',
+            'volume_both': '4bar_with_volume',
+            'volume_long': '4bar_with_volume_long',
+            'volume_short': '4bar_with_volume_short',
+        }
+        if exit_mode in legacy_map:
+            exit_mode = legacy_map[exit_mode]
+        
+        if exit_mode == '4bar_only':
+            # Default 4-bar exit only (no volume exit)
+            self._exit = ExitController(config.default_exit_bars)
+            self._volume_exit = None
+        else:
+            # 4-bar exit + volume peak exit (whichever triggers first)
+            use_volume_both = exit_mode == '4bar_with_volume'
+            use_volume_long = exit_mode == '4bar_with_volume_long'
+            use_volume_short = exit_mode == '4bar_with_volume_short'
+            
+            self._exit = None
+            self._volume_exit = VolumeNodeExitStrategy(
+                default_exit_bars=config.default_exit_bars,
+                use_volume_exit=use_volume_both,
+                volume_exit_long=use_volume_long,
+                volume_exit_short=use_volume_short,
+                volume_lookback=getattr(config, 'volume_exit_lookback', 240),  # Optimized default (Pine Script: 360)
+                volume_num_rows=getattr(config, 'volume_exit_num_rows', 60),   # Optimized default (Pine Script: 100)
+                volume_value_area=getattr(config, 'volume_exit_value_area', 0.7),
+                volume_peak_percent=getattr(config, 'volume_exit_peak_percent', 0.09),
+                volume_trough_percent=getattr(config, 'volume_exit_trough_percent', 0.07),
+                volume_threshold=getattr(config, 'volume_exit_threshold', 0.01),
+            )
+        
         self._system = LorentzianTradingSystem(
             TradingSettings(
-                neighbors_count=config.neighbors_count,
-                max_bars_back=config.max_bars_back,
-                use_kernel_filter=config.use_kernel_filter,
-                use_volatility_filter=config.use_volatility_filter,
-                use_regime_filter=config.use_regime_filter,
-                enable_reentry=config.enable_reentry,
+                neighbors_count=getattr(config, 'neighbors_count', 5),
+                max_bars_back=getattr(config, 'max_bars_back', config.lookback_bars if hasattr(config, 'lookback_bars') else 3000),
+                use_kernel_filter=getattr(config, 'use_kernel_filter', True),
+                use_volatility_filter=getattr(config, 'use_volatility_filter', True),
+                use_regime_filter=getattr(config, 'use_regime_filter', True),
+                enable_reentry=getattr(config, 'enable_reentry', True),
             )
         )
 
@@ -71,21 +118,66 @@ class SingleTimeframeBacktester:
             start_bar=self.config.start_bar,
         )
 
-        for bar in range(self.config.start_bar, len(self._data)):
-            if self._current_trade and self.config.track_drawdown:
-                self._update_trade_drawdown(bar)
+        total_bars = len(self._data) - self.config.start_bar
+        progress_interval = max(100, total_bars // 10)  # Print progress every 10% or every 100 bars
+        
+        try:
+            for bar_idx, bar in enumerate(range(self.config.start_bar, len(self._data))):
+                # Check for keyboard interrupt periodically (every bar for responsiveness)
+                if bar_idx % 10 == 0:  # Check every 10 bars
+                    import signal
+                    signal.siginterrupt(signal.SIGINT, False)  # Make interruptible
+                
+                # Print progress for long-running backtests
+                if bar_idx % progress_interval == 0 and self._volume_exit:
+                    progress = (bar_idx / total_bars) * 100
+                    print(f"⏳ Progress: {bar_idx}/{total_bars} bars ({progress:.1f}%)")
+                
+                if self._current_trade and self.config.track_drawdown:
+                    self._update_trade_drawdown(bar)
 
+                if self._current_trade:
+                    # Check exit based on strategy
+                    if self._volume_exit:
+                        # Volume exit strategy (includes default + volume)
+                        # Pass entire DataFrame reference, not slice - detector will handle slicing internally
+                        row = self._data.loc[bar]
+                        should_exit, reason, exit_price = self._volume_exit.should_exit(
+                            trade_direction=self._current_trade.direction,
+                            entry_bar=self._current_trade.entry_bar,
+                            current_bar=bar,
+                            historical_data=self._data,  # Pass full DataFrame - detector handles slicing
+                            current_high=float(row["high"]),
+                            current_low=float(row["low"]),
+                            current_close=float(row["close"]),
+                            entry_price=self._current_trade.entry_price,  # Pass entry price to filter peaks (targets only)
+                        )
+                        # Pass entry_bar to check_exit for debug logging
+                        if self._volume_exit and self._volume_exit.volume_detector:
+                            # The entry_bar is already passed via should_exit -> check_exit, but we need to pass it through
+                            pass
+                        if should_exit:
+                            self._exit_trade(bar, reason, exit_price=exit_price)
+                            continue
+                    else:
+                        # Default exit only
+                        should_exit, reason = self._exit.should_exit(self._current_trade, bar)
+                        if should_exit:
+                            self._exit_trade(bar, reason)
+                            continue
+
+                if not self._current_trade:
+                    if signals["start_long"][bar]:
+                        self._enter_trade(bar, direction=1)
+                    elif signals["start_short"][bar]:
+                        self._enter_trade(bar, direction=-1)
+        except KeyboardInterrupt:
+            print("\n\n⚠️  Keyboard interrupt received. Stopping backtest...")
+            print(f"   Processed {bar_idx}/{total_bars} bars ({bar_idx/total_bars*100:.1f}%)")
             if self._current_trade:
-                should_exit, reason = self._exit.should_exit(self._current_trade, bar)
-                if should_exit:
-                    self._exit_trade(bar, reason)
-                    continue
-
-            if not self._current_trade:
-                if signals["start_long"][bar]:
-                    self._enter_trade(bar, direction=1)
-                elif signals["start_short"][bar]:
-                    self._enter_trade(bar, direction=-1)
+                print(f"   Exiting current trade at bar {bar}")
+                self._exit_trade(bar, "interrupted", exit_price=None)
+            raise  # Re-raise to allow cleanup
 
         if self._current_trade:
             self._exit_trade(len(self._data) - 1, ExitReason.END_OF_DATA.value)
@@ -153,7 +245,7 @@ class SingleTimeframeBacktester:
             timeframe=self.config.timeframe,
         )
 
-    def _exit_trade(self, bar: int, reason: str) -> None:
+    def _exit_trade(self, bar: int, reason: str, exit_price: Optional[float] = None) -> None:
         assert self._data is not None
         if not self._current_trade:
             return
@@ -161,7 +253,8 @@ class SingleTimeframeBacktester:
         row = self._data.loc[bar]
         self._current_trade.exit_bar = bar
         self._current_trade.exit_time = row["timestamp"]
-        self._current_trade.exit_price = float(row["close"])
+        # Use provided exit_price if available (for volume exits), otherwise use close
+        self._current_trade.exit_price = float(exit_price) if exit_price is not None else float(row["close"])
         self._current_trade.exit_reason = reason
         self._current_trade.bars_held = bar - self._current_trade.entry_bar
 
