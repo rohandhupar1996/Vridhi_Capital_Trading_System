@@ -44,19 +44,30 @@ from src.trading_system.config import AppConfig
 from src.trading_system.logging import setup_logging, ComponentLogger
 from src.trading_system.broker import ZerodhaAuthenticator
 from src.trading_system.broker.zerodha_auth import ZerodhaCredentials
-from src.trading_system.data.zerodha_futures_utils import (
+# Import directly by adding src to path first (avoids __init__.py import issues with tvDatafeed)
+sys.path.insert(0, str(PROJECT_ROOT / "src"))
+from trading_system.data.zerodha_futures_utils import (
     get_current_month_futures_symbol_and_token,
     get_monthly_expiry_from_option_chain
 )
 from src.trading_system.oms.option_chain_manager import OptionChainManager
 from src.trading_system.oms.order_manager import OrderManager, OrderStatus
 
-# Load environment
-load_dotenv()
+# Load environment - check both locations (same as zerodha_login.py)
+env_path = PROJECT_ROOT / "configs" / ".env"
+if env_path.exists():
+    load_dotenv(env_path)
+else:
+    # Try default .env location
+    load_dotenv(PROJECT_ROOT / ".env")
 
 # Setup logging
 setup_logging()
 logger = ComponentLogger.get_logger("test_after_market_order")
+
+# Log which env file was loaded
+if env_path.exists():
+    logger.info(f"Loaded credentials from {env_path}")
 
 KOLKATA_TZ = pytz.timezone('Asia/Kolkata')
 
@@ -134,19 +145,50 @@ def test_after_market_order():
         print("STEP 1: Authentication")
         print("=" * 70)
         
+        # Load credentials - same logic as zerodha_login.py
         api_key = os.getenv("ZERODHA_API_KEY")
         api_secret = os.getenv("ZERODHA_API_SECRET")
         
+        # If not found, try loading from AppConfig
+        if not api_key or not api_secret:
+            try:
+                from src.trading_system.config import AppConfig
+                app_config = AppConfig()
+                api_key = api_key or app_config.zerodha.api_key
+                api_secret = api_secret or app_config.zerodha.api_secret
+            except:
+                pass
+        
         if not api_key or not api_secret:
             print("❌ Missing ZERODHA_API_KEY or ZERODHA_API_SECRET")
+            print(f"   Checked: {env_path}")
+            print("   Add them to configs/.env file:")
+            print("   ZERODHA_API_KEY=your_api_key")
+            print("   ZERODHA_API_SECRET=your_api_secret")
             return
         
         credentials = ZerodhaCredentials(
             api_key=api_key,
             api_secret=api_secret
         )
-        authenticator = ZerodhaAuthenticator(credentials, logger)
-        kite = authenticator.get_authenticated_kite()
+        # Initialize authenticator with proper token file path (same as zerodha_login.py)
+        try:
+            app_config = AppConfig()
+            token_file = app_config.resolve_path(app_config.zerodha.token_file)
+        except:
+            token_file = PROJECT_ROOT / "configs" / "zerodha_tokens.json"
+        
+        authenticator = ZerodhaAuthenticator(
+            credentials=credentials,
+            token_file=token_file,
+            logger=logger
+        )
+        # Get kite instance - check if authenticated first
+        if authenticator.is_token_valid():
+            kite = authenticator.get_kite_instance()
+        else:
+            print("❌ No valid token found. Please run zerodha_login.py first")
+            return
         
         if not kite:
             print("❌ Authentication failed")
@@ -220,8 +262,12 @@ def test_after_market_order():
             dry_run=False  # ⚠️  REAL MODE - NO DRY-RUN!
         )
         
-        oms.update_futures_price(futures_ltp)
+        # Set futures LTP directly (don't use update_futures_price which expects tick data)
+        oms.futures_ltp = futures_ltp
         oms.option_chain_manager = option_chain_manager
+        # Set futures symbol and token
+        oms.futures_symbol = futures_symbol
+        oms.futures_token = futures_token
         
         print("✅ Order Manager initialized (REAL MODE)")
         
