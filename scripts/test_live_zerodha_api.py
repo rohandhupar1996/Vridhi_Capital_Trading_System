@@ -75,7 +75,7 @@ signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
 
-def test_authentication():
+def test_authentication(request_token: Optional[str] = None):
     """Phase 1: Authentication & Connection"""
     print("=" * 70)
     print("PHASE 1: AUTHENTICATION & CONNECTION")
@@ -124,40 +124,48 @@ def test_authentication():
         else:
             print("\n🔐 Attempting login...")
             
-            # Start OAuth callback server
-            callback_server = OAuthCallbackServer(port=8080, timeout=120)
-            if callback_server.start():
-                print("✅ Callback server started on http://localhost:8080")
-                
-                # Generate login URL
-                login_url = authenticator.get_login_url()
-                print(f"\n📋 Login URL: {login_url}")
-                
-                # Open browser
-                import webbrowser
-                webbrowser.open(login_url)
-                print("✅ Browser opened automatically")
-                
-                print("\n⏳ Waiting for you to complete login in browser...")
-                request_token = callback_server.wait_for_callback()
-                callback_server.stop()
-                
-                if not request_token:
-                    print("⏱️  Timeout. Please enter token manually:")
-                    request_token = input("   Enter request_token: ").strip()
-                
-                if request_token:
-                    print("\n🔄 Authenticating with request token...")
-                    if not authenticator.authenticate_with_token(request_token):
-                        print("❌ Authentication failed")
-                        return None, None
+            # Use provided token if available
+            if request_token:
+                print(f"✅ Using provided request token: {request_token[:20]}...")
+                print("\n🔄 Authenticating with request token...")
+                if not authenticator.authenticate_with_token(request_token):
+                    print("❌ Authentication failed")
+                    return None, None
             else:
-                print("❌ Failed to start callback server")
-                request_token = input("   Enter request_token: ").strip()
-                if request_token:
-                    if not authenticator.authenticate_with_token(request_token):
-                        print("❌ Authentication failed")
-                        return None, None
+                # Start OAuth callback server
+                callback_server = OAuthCallbackServer(port=8080, timeout=120)
+                if callback_server.start():
+                    print("✅ Callback server started on http://localhost:8080")
+                    
+                    # Generate login URL
+                    login_url = authenticator.get_login_url()
+                    print(f"\n📋 Login URL: {login_url}")
+                    
+                    # Open browser
+                    import webbrowser
+                    webbrowser.open(login_url)
+                    print("✅ Browser opened automatically")
+                    
+                    print("\n⏳ Waiting for you to complete login in browser...")
+                    request_token = callback_server.wait_for_callback()
+                    callback_server.stop()
+                    
+                    if not request_token:
+                        print("⏱️  Timeout. Please enter token manually:")
+                        request_token = input("   Enter request_token: ").strip()
+                    
+                    if request_token:
+                        print("\n🔄 Authenticating with request token...")
+                        if not authenticator.authenticate_with_token(request_token):
+                            print("❌ Authentication failed")
+                            return None, None
+                else:
+                    print("❌ Failed to start callback server")
+                    request_token = input("   Enter request_token: ").strip()
+                    if request_token:
+                        if not authenticator.authenticate_with_token(request_token):
+                            print("❌ Authentication failed")
+                            return None, None
         
         # Get Kite instance
         kite = authenticator.get_kite_instance()
@@ -206,19 +214,26 @@ def test_futures_and_option_chain(kite, logger):
         option_chain_manager.refresh_option_chain()
         
         # Get expiry
-        expiry_date = get_monthly_expiry_from_option_chain(kite, logger)
+        expiry_date = get_monthly_expiry_from_option_chain(kite)
         if expiry_date:
             print(f"✅ Option chain expiry: {expiry_date} (last Tuesday)")
         
         # Get summary
         summary = option_chain_manager.get_contracts_summary()
         print(f"✅ Option chain fetched: {summary['total_contracts']} contracts")
-        print(f"   Current expiry: {summary['current_expiry']}")
-        print(f"   Available strikes: {summary['strikes_count']}")
+        if 'current_expiry' in summary:
+            print(f"   Current expiry: {summary['current_expiry']}")
+        elif 'expiry' in summary:
+            print(f"   Expiry: {summary['expiry']}")
+        strikes = summary.get('strikes', [])
+        if isinstance(strikes, list):
+            print(f"   Available strikes: {len(strikes)} strikes")
+        else:
+            print(f"   Available strikes: {strikes} strikes")
         
-        # Test ATM strike calculation
+        # Test ATM strike calculation (using simple round method)
         futures_ltp = 57300.0  # Example LTP
-        atm_strike = option_chain_manager._calculate_atm_strike(futures_ltp)
+        atm_strike = int(round(futures_ltp / 100) * 100)
         print(f"✅ ATM strike (LTP {futures_ltp}): {atm_strike}")
         
         return symbol, token, option_chain_manager
@@ -245,47 +260,77 @@ def test_margin_calculation(kite, option_chain_manager, futures_ltp, logger):
             logger=logger
         )
         
+        # Calculate ATM and hedge strikes
+        atm_strike = int(round(futures_ltp / 100) * 100)
+        hedge_strike_long = atm_strike - (20 * 100)  # 20 legs down for LONG
+        hedge_strike_short = atm_strike + (20 * 100)  # 20 legs up for SHORT
+        
         # Test LONG margin (1 lot)
         print("🔍 Calculating LONG margin (1 lot)...")
+        print(f"   ATM strike: {atm_strike}, Hedge strike: {hedge_strike_long}")
         long_margin = margin_calculator.calculate_long_margin(
-            futures_price=futures_ltp,
-            lot_size=1
+            atm_strike=atm_strike,
+            hedge_strike=hedge_strike_long,
+            lot_size=1,
+            futures_price=futures_ltp
         )
         
-        if long_margin and long_margin > 0:
-            print(f"✅ LONG margin (1 lot): ₹{long_margin:,.2f}")
-            print(f"   Per lot: ₹{long_margin / 1:,.2f}")
+        if long_margin and isinstance(long_margin, dict):
+            total_margin = long_margin.get('total_margin', 0)
+            if total_margin > 0:
+                print(f"✅ LONG margin (1 lot): ₹{total_margin:,.2f}")
+                print(f"   Per lot: ₹{total_margin / 1:,.2f}")
+                print(f"   Spread benefit: ₹{long_margin.get('spread_benefit', 0):,.2f}")
+                print(f"   Initial margin: ₹{long_margin.get('initial_margin', 0):,.2f}")
+                print(f"   Final margin: ₹{long_margin.get('final_margin', 0):,.2f}")
+            else:
+                print("❌ Failed to calculate LONG margin (total_margin is 0)")
+                return None, None
         else:
-            print("❌ Failed to calculate LONG margin")
+            print("❌ Failed to calculate LONG margin (invalid response)")
             return None, None
         
         # Test SHORT margin (1 lot)
         print("\n🔍 Calculating SHORT margin (1 lot)...")
+        print(f"   ATM strike: {atm_strike}, Hedge strike: {hedge_strike_short}")
         short_margin = margin_calculator.calculate_short_margin(
-            futures_price=futures_ltp,
-            lot_size=1
+            atm_strike=atm_strike,
+            hedge_strike=hedge_strike_short,
+            lot_size=1,
+            futures_price=futures_ltp
         )
         
-        if short_margin and short_margin > 0:
-            print(f"✅ SHORT margin (1 lot): ₹{short_margin:,.2f}")
-            print(f"   Per lot: ₹{short_margin / 1:,.2f}")
+        if short_margin and isinstance(short_margin, dict):
+            total_margin = short_margin.get('total_margin', 0)
+            if total_margin > 0:
+                print(f"✅ SHORT margin (1 lot): ₹{total_margin:,.2f}")
+                print(f"   Per lot: ₹{total_margin / 1:,.2f}")
+                print(f"   Spread benefit: ₹{short_margin.get('spread_benefit', 0):,.2f}")
+                print(f"   Initial margin: ₹{short_margin.get('initial_margin', 0):,.2f}")
+                print(f"   Final margin: ₹{short_margin.get('final_margin', 0):,.2f}")
+            else:
+                print("❌ Failed to calculate SHORT margin (total_margin is 0)")
+                return None, None
         else:
-            print("❌ Failed to calculate SHORT margin")
+            print("❌ Failed to calculate SHORT margin (invalid response)")
             return None, None
         
         # Check available margin
         available_margin = margin_calculator.check_available_margin()
+        long_total = long_margin.get('total_margin', 0) if isinstance(long_margin, dict) else 0
+        short_total = short_margin.get('total_margin', 0) if isinstance(short_margin, dict) else 0
+        
         if available_margin:
             print(f"\n✅ Available margin: ₹{available_margin:,.2f}")
-            print(f"   LONG margin required: ₹{long_margin:,.2f}")
-            print(f"   SHORT margin required: ₹{short_margin:,.2f}")
+            print(f"   LONG margin required: ₹{long_total:,.2f}")
+            print(f"   SHORT margin required: ₹{short_total:,.2f}")
             
-            if available_margin >= long_margin:
+            if available_margin >= long_total:
                 print(f"   ✅ Sufficient margin for LONG (1 lot)")
             else:
                 print(f"   ⚠️  Insufficient margin for LONG (1 lot)")
             
-            if available_margin >= short_margin:
+            if available_margin >= short_total:
                 print(f"   ✅ Sufficient margin for SHORT (1 lot)")
             else:
                 print(f"   ⚠️  Insufficient margin for SHORT (1 lot)")
@@ -316,12 +361,22 @@ def test_long_entry(kite, option_chain_manager, margin_calculator, futures_token
             dry_run=True  # DRY RUN MODE
         )
         
+        # Update futures price first (needed for pre-calculation)
+        try:
+            quote = kite.quote(f"NSE_FUT:{futures_symbol}")
+            if quote and f"NSE_FUT:{futures_symbol}" in quote:
+                oms.update_futures_price(quote[f"NSE_FUT:{futures_symbol}"]["last_price"])
+                print(f"✅ Updated futures LTP: ₹{oms.futures_ltp:.2f}")
+        except Exception as e:
+            print(f"⚠️  Failed to get futures LTP: {e}")
+            oms.update_futures_price(futures_ltp)  # Use provided LTP
+        
         # Pre-calculate margins
         print("🔍 Pre-calculating LONG margin...")
         oms.pre_calculate_margins()
         
         # Check margin availability
-        available = oms.check_margin_availability("LONG")
+        available = oms.check_margin_availability("LONG", lot_size=1)
         if not available:
             print("⚠️  Insufficient margin for LONG entry (1 lot)")
             return None
@@ -370,12 +425,22 @@ def test_short_entry(kite, option_chain_manager, margin_calculator, oms, futures
             print("✅ Existing position exited")
             time.sleep(2)  # Wait for exit to complete
         
+        # Update futures price first (needed for pre-calculation)
+        try:
+            quote = kite.quote(f"NSE_FUT:{futures_symbol}")
+            if quote and f"NSE_FUT:{futures_symbol}" in quote:
+                oms.update_futures_price(quote[f"NSE_FUT:{futures_symbol}"]["last_price"])
+                print(f"✅ Updated futures LTP: ₹{oms.futures_ltp:.2f}")
+        except Exception as e:
+            print(f"⚠️  Failed to get futures LTP: {e}")
+            oms.update_futures_price(futures_ltp)  # Use provided LTP
+        
         # Pre-calculate margins
         print("\n🔍 Pre-calculating SHORT margin...")
         oms.pre_calculate_margins()
         
         # Check margin availability
-        available = oms.check_margin_availability("SHORT")
+        available = oms.check_margin_availability("SHORT", lot_size=1)
         if not available:
             print("⚠️  Insufficient margin for SHORT entry (1 lot)")
             return None
@@ -446,7 +511,7 @@ def test_exit_position(oms, logger):
         return False
 
 
-def test_websocket_price_feed(kite, oms, futures_token, logger):
+def test_websocket_price_feed(kite, oms, futures_token, futures_symbol, logger):
     """Phase 7: WebSocket Price Feed"""
     print("\n" + "=" * 70)
     print("PHASE 7: WEBSOCKET PRICE FEED")
@@ -456,6 +521,21 @@ def test_websocket_price_feed(kite, oms, futures_token, logger):
     global running, price_feed
     
     try:
+        # Create OMS if not provided
+        if oms is None:
+            print("⚠️  No OMS provided, creating new OMS for WebSocket test...")
+            from src.trading_system.oms.option_chain_manager import OptionChainManager
+            option_chain_manager = OptionChainManager(kite=kite, logger=logger)
+            option_chain_manager.refresh_option_chain()
+            
+            oms = OrderManager(
+                kite=kite,
+                lot_size=1,
+                hedge_legs=20,
+                logger=logger,
+                dry_run=True
+            )
+        
         # Initialize WebSocket price feed
         print(f"📡 Starting WebSocket price feed for token {futures_token}...")
         price_feed = WebSocketPriceFeed(
@@ -603,7 +683,7 @@ def test_complete_flow(kite, option_chain_manager, margin_calculator, futures_to
         return False
 
 
-def main():
+def main(request_token: Optional[str] = None):
     """Main testing function"""
     print("\n" + "=" * 70)
     print("LIVE ZERODHA API TESTING - DRY RUN MODE (1 LOT)")
@@ -639,7 +719,7 @@ def main():
     
     try:
         # Phase 1: Authentication
-        authenticator, kite = test_authentication()
+        authenticator, kite = test_authentication(request_token=request_token)
         if not kite:
             print("\n❌ Phase 1 failed - Cannot proceed without authentication")
             return
@@ -678,10 +758,12 @@ def main():
         
         # Phase 7: WebSocket Price Feed (optional, may timeout)
         try:
-            if test_websocket_price_feed(kite, oms, futures_token, logger):
+            if test_websocket_price_feed(kite, oms, futures_token, futures_symbol, logger):
                 results['Phase 7: WebSocket Price Feed'] = True
         except Exception as e:
             print(f"\n⚠️  Phase 7 skipped due to error: {e}")
+            import traceback
+            traceback.print_exc()
         
         # Phase 8: Complete Flow
         if test_complete_flow(kite, option_chain_manager, margin_calculator, futures_token, futures_symbol, futures_ltp, logger):
@@ -727,5 +809,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    # Check for request token as command line argument
+    request_token = sys.argv[1] if len(sys.argv) > 1 else None
+    main(request_token=request_token)
 
