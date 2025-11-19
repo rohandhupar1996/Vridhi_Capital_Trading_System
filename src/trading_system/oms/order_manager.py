@@ -1049,10 +1049,31 @@ class OrderManager:
             is_open = self._is_market_open()
             if is_open:
                 variety = 'regular'  # Market hours: Regular order (executes immediately)
+                order_type = self.kite.ORDER_TYPE_MARKET  # MARKET orders allowed during market hours
                 order_type_name = "MARKET (REGULAR)"
+                limit_price = None  # Not needed for MARKET orders
             else:
                 variety = 'amo'  # After market hours: AMO (queued for next market open)
-                order_type_name = "MARKET (AMO)"
+                # AMO orders for index options (BankNifty) must be LIMIT orders, not MARKET
+                order_type = self.kite.ORDER_TYPE_LIMIT  # LIMIT orders required for AMO index options
+                order_type_name = "LIMIT (AMO)"
+                # Get current LTP as limit price for AMO orders
+                try:
+                    instrument_key = f"NFO:{symbol}"
+                    quote = self.kite.quote(instrument_key)
+                    if instrument_key in quote:
+                        limit_price = quote[instrument_key].get('last_price', self.futures_ltp)
+                        if not limit_price or limit_price <= 0:
+                            limit_price = self.futures_ltp
+                    else:
+                        limit_price = self.futures_ltp
+                except Exception as e:
+                    self.logger.warning(f"Could not get LTP for {symbol}, using futures LTP: {e}")
+                    limit_price = self.futures_ltp or 0
+                
+                if not limit_price or limit_price <= 0:
+                    self.logger.error(f"Cannot place AMO order: No valid price available for {symbol}")
+                    return None
             
             # Check if order needs slicing (exceeds freeze limit)
             # BANKNIFTY freeze limit: 595 (17 lots)
@@ -1067,8 +1088,13 @@ class OrderManager:
                 'transaction_type': transaction_type,
                 'quantity': quantity,
                 'product': self.kite.PRODUCT_NRML,  # NRML for options
-                'order_type': self.kite.ORDER_TYPE_MARKET  # Always MARKET order type
+                'order_type': order_type  # MARKET during market hours, LIMIT for AMO
             }
+            
+            # Add price parameter for LIMIT orders (AMO)
+            if order_type == self.kite.ORDER_TYPE_LIMIT:
+                order_params['price'] = limit_price
+                self.logger.debug(f"AMO LIMIT order price: {limit_price}")
             
             # Enable autoslice if order exceeds freeze limit
             # autoslice=True enables automatic order slicing for quantities above freeze limits
@@ -1085,8 +1111,9 @@ class OrderManager:
                     f"Autoslice not required."
                 )
             
-            # Market protection: -1 for automatic market protection (optional)
-            # order_params['market_protection'] = -1  # Automatic market protection
+            # Market protection: -1 for automatic market protection (optional, only for MARKET orders)
+            # if order_type == self.kite.ORDER_TYPE_MARKET:
+            #     order_params['market_protection'] = -1  # Automatic market protection
             
             self.logger.info(
                 f"Placing {order_type_name} order",
@@ -1095,6 +1122,8 @@ class OrderManager:
                 side=transaction_type,
                 market_status="OPEN" if is_open else "CLOSED",
                 variety=variety.upper(),
+                order_type="MARKET" if order_type == self.kite.ORDER_TYPE_MARKET else "LIMIT",
+                price=limit_price if order_type == self.kite.ORDER_TYPE_LIMIT else None,
                 autoslice=order_params.get('autoslice', False),
                 freeze_limit=freeze_limit,
                 lots=quantity//35
