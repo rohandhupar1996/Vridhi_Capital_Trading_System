@@ -271,29 +271,37 @@ def test_after_market_order():
         
         print("✅ Order Manager initialized (REAL MODE)")
         
-        # Step 5: Place ONE real order (MARKET order)
+        # Step 5: Place ONE real order
         print("\n" + "=" * 70)
-        print("STEP 5: Place ONE Real Order (BUY - MARKET)")
+        print("STEP 5: Place ONE Real Order (BUY)")
         print("=" * 70)
         
-        print(f"🔵 Placing REAL BUY order (MARKET):")
+        # Determine order type based on market status
+        if is_open:
+            display_order_type = "MARKET"
+        else:
+            display_order_type = "LIMIT (AMO)"  # AMO orders for index options must be LIMIT
+        
+        print(f"🔵 Placing REAL BUY order ({display_order_type}):")
         print(f"   Symbol: {atm_ce_symbol}")
         print(f"   Quantity: 35 (1 lot)")
         print(f"   Exchange: NFO")
         print(f"   Product: NRML")
-        print(f"   Order Type: MARKET")
+        print(f"   Order Type: {display_order_type}")
         print(f"   Market Status: {status}")
         print()
         
         if not is_open:
             print("✅ Market is CLOSED:")
-            print("   - Order will be PLACED (real API call)")
+            print("   - Order will be PLACED as LIMIT (AMO) order")
             print("   - Order will be QUEUED")
             print("   - Order will execute at 9:15 AM next day")
             print("   - You can CANCEL before market opens")
+            print(f"   - Limit Price: ₹{option_ltp:.2f} (from current LTP)")
         else:
             print("⚠️  Market is OPEN:")
-            print("   - Order will be PLACED and EXECUTE IMMEDIATELY!")
+            print("   - Order will be PLACED as MARKET order")
+            print("   - Order will EXECUTE IMMEDIATELY!")
         
         print()
         
