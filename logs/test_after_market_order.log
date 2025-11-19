@@ -1,0 +1,184 @@
+2025-11-19 19:00:19 | INFO     | Loaded credentials from /Users/rohan/Downloads/Vridhi_Capital_Trading_System/configs/.env
+2025-11-19 19:00:41 | INFO     | Loaded credentials from /Users/rohan/Downloads/Vridhi_Capital_Trading_System/configs/.env
+2025-11-19 19:00:41 | INFO     | Loaded saved access token from file
+2025-11-19 19:00:41 | INFO     | Initialized KiteConnect with saved access token
+2025-11-19 19:00:42 | INFO     | Already authenticated with valid token
+2025-11-19 19:00:45 | INFO     | Refreshing option chain from Zerodha...
+2025-11-19 19:00:49 | INFO     | Found 981 BankNifty option contracts
+2025-11-19 19:00:49 | INFO     | Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+2025-11-19 19:00:49 | INFO     | Found 330 options for current expiry
+2025-11-19 19:00:49 | INFO     | Option chain cached | total_contracts=330 | expiry=2025-11-25
+2025-11-19 19:00:49 | INFO     | Refreshing option chain from Zerodha...
+2025-11-19 19:00:52 | INFO     | Found 981 BankNifty option contracts
+2025-11-19 19:00:52 | INFO     | Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+2025-11-19 19:00:52 | INFO     | Found 330 options for current expiry
+2025-11-19 19:00:52 | INFO     | Option chain cached | total_contracts=330 | expiry=2025-11-25
+2025-11-19 19:00:52 | DEBUG    | Found option contract: BANKNIFTY25NOV59000CE | strike=59000 | option_type=CE | expiry=2025-11-25
+2025-11-19 19:00:55 | INFO     | Fetched futures symbol dynamically: BANKNIFTY25NOVFUT
+2025-11-19 19:00:58 | INFO     | OMS initialized | lot_size=1 | hedge_legs=20 | futures_symbol=BANKNIFTY25NOVFUT | option_chain_expiry=2025-11-25 | option_chain_contracts=330 | option_chain_strikes=165
+2025-11-19 19:01:03 | INFO     | Futures token found: 9485058 for BANKNIFTY25NOVFUT
+2025-11-19 19:01:28 | INFO     | Loaded credentials from /Users/rohan/Downloads/Vridhi_Capital_Trading_System/configs/.env
+2025-11-19 19:01:28 | INFO     | Loaded saved access token from file
+2025-11-19 19:01:28 | INFO     | Initialized KiteConnect with saved access token
+2025-11-19 19:01:28 | INFO     | Already authenticated with valid token
+2025-11-19 19:01:33 | INFO     | Refreshing option chain from Zerodha...
+2025-11-19 19:01:37 | INFO     | Found 981 BankNifty option contracts
+2025-11-19 19:01:37 | INFO     | Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+2025-11-19 19:01:37 | INFO     | Found 330 options for current expiry
+2025-11-19 19:01:37 | INFO     | Option chain cached | total_contracts=330 | expiry=2025-11-25
+2025-11-19 19:01:37 | INFO     | Refreshing option chain from Zerodha...
+2025-11-19 19:01:40 | INFO     | Found 981 BankNifty option contracts
+2025-11-19 19:01:40 | INFO     | Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+2025-11-19 19:01:40 | INFO     | Found 330 options for current expiry
+2025-11-19 19:01:40 | INFO     | Option chain cached | total_contracts=330 | expiry=2025-11-25
+2025-11-19 19:01:40 | DEBUG    | Found option contract: BANKNIFTY25NOV59000CE | strike=59000 | option_type=CE | expiry=2025-11-25
+2025-11-19 19:01:45 | INFO     | Fetched futures symbol dynamically: BANKNIFTY25NOVFUT
+2025-11-19 19:01:49 | INFO     | OMS initialized | lot_size=1 | hedge_legs=20 | futures_symbol=BANKNIFTY25NOVFUT | option_chain_expiry=2025-11-25 | option_chain_contracts=330 | option_chain_strikes=165
+2025-11-19 19:01:49 | ERROR    | Failed to place order: BANKNIFTY25NOV59000CE | error=Your order could not be converted to a After Market Order (AMO).
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 986, in _place_market_order
+    order_id = self.kite.place_order(
+  File "/opt/anaconda3/envs/banknifty_trading/lib/python3.10/site-packages/kiteconnect/connect.py", line 361, in place_order
+    return self._post("order.place",
+  File "/opt/anaconda3/envs/banknifty_trading/lib/python3.10/site-packages/kiteconnect/connect.py", line 865, in _post
+    return self._request(route, "POST", url_args=url_args, params=params, is_json=is_json, query_params=query_params)
+  File "/opt/anaconda3/envs/banknifty_trading/lib/python3.10/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.InputException: Your order could not be converted to a After Market Order (AMO).
+2025-11-19 19:14:14 | INFO     | Loaded credentials from /Users/rohan/Downloads/Vridhi_Capital_Trading_System/configs/.env
+2025-11-19 19:14:14 | INFO     | Loaded saved access token from file
+2025-11-19 19:14:14 | INFO     | Initialized KiteConnect with saved access token
+2025-11-19 19:14:15 | INFO     | Already authenticated with valid token
+2025-11-19 19:14:17 | INFO     | Refreshing option chain from Zerodha...
+2025-11-19 19:14:19 | INFO     | Found 981 BankNifty option contracts
+2025-11-19 19:14:19 | INFO     | Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+2025-11-19 19:14:19 | INFO     | Found 330 options for current expiry
+2025-11-19 19:14:19 | INFO     | Option chain cached | total_contracts=330 | expiry=2025-11-25
+2025-11-19 19:14:19 | INFO     | Refreshing option chain from Zerodha...
+2025-11-19 19:14:21 | INFO     | Found 981 BankNifty option contracts
+2025-11-19 19:14:21 | INFO     | Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+2025-11-19 19:14:21 | INFO     | Found 330 options for current expiry
+2025-11-19 19:14:21 | INFO     | Option chain cached | total_contracts=330 | expiry=2025-11-25
+2025-11-19 19:14:21 | DEBUG    | Found option contract: BANKNIFTY25NOV59000CE | strike=59000 | option_type=CE | expiry=2025-11-25
+2025-11-19 19:14:24 | INFO     | Fetched futures symbol dynamically: BANKNIFTY25NOVFUT
+2025-11-19 19:14:26 | INFO     | OMS initialized | lot_size=1 | hedge_legs=20 | futures_symbol=BANKNIFTY25NOVFUT | option_chain_expiry=2025-11-25 | option_chain_contracts=330 | option_chain_strikes=165
+2025-11-19 19:14:26 | ERROR    | Failed to place order: BANKNIFTY25NOV59000CE | error='OrderManager' object has no attribute '_should_slice_order'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 1025, in _place_market_order
+    should_slice, freeze_limit = self._should_slice_order(quantity, symbol)
+AttributeError: 'OrderManager' object has no attribute '_should_slice_order'
+2025-11-19 19:15:12 | INFO     | Loaded credentials from /Users/rohan/Downloads/Vridhi_Capital_Trading_System/configs/.env
+2025-11-19 19:15:12 | INFO     | Loaded saved access token from file
+2025-11-19 19:15:12 | INFO     | Initialized KiteConnect with saved access token
+2025-11-19 19:15:13 | INFO     | Already authenticated with valid token
+2025-11-19 19:15:15 | INFO     | Refreshing option chain from Zerodha...
+2025-11-19 19:15:17 | INFO     | Found 981 BankNifty option contracts
+2025-11-19 19:15:17 | INFO     | Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+2025-11-19 19:15:17 | INFO     | Found 330 options for current expiry
+2025-11-19 19:15:17 | INFO     | Option chain cached | total_contracts=330 | expiry=2025-11-25
+2025-11-19 19:15:17 | INFO     | Refreshing option chain from Zerodha...
+2025-11-19 19:15:19 | INFO     | Found 981 BankNifty option contracts
+2025-11-19 19:15:19 | INFO     | Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+2025-11-19 19:15:19 | INFO     | Found 330 options for current expiry
+2025-11-19 19:15:19 | INFO     | Option chain cached | total_contracts=330 | expiry=2025-11-25
+2025-11-19 19:15:19 | DEBUG    | Found option contract: BANKNIFTY25NOV59000CE | strike=59000 | option_type=CE | expiry=2025-11-25
+2025-11-19 19:15:21 | INFO     | Fetched futures symbol dynamically: BANKNIFTY25NOVFUT
+2025-11-19 19:15:23 | INFO     | OMS initialized | lot_size=1 | hedge_legs=20 | futures_symbol=BANKNIFTY25NOVFUT | option_chain_expiry=2025-11-25 | option_chain_contracts=330 | option_chain_strikes=165
+2025-11-19 19:15:23 | ERROR    | Failed to place order: BANKNIFTY25NOV59000CE | error='OrderManager' object has no attribute '_get_freeze_limit'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 1026, in _place_market_order
+    freeze_limit = self._get_freeze_limit(symbol)
+AttributeError: 'OrderManager' object has no attribute '_get_freeze_limit'
+2025-11-19 19:15:55 | INFO     | Loaded credentials from /Users/rohan/Downloads/Vridhi_Capital_Trading_System/configs/.env
+2025-11-19 19:15:55 | INFO     | Loaded saved access token from file
+2025-11-19 19:15:55 | INFO     | Initialized KiteConnect with saved access token
+2025-11-19 19:15:55 | INFO     | Already authenticated with valid token
+2025-11-19 19:15:58 | INFO     | Refreshing option chain from Zerodha...
+2025-11-19 19:16:00 | INFO     | Found 981 BankNifty option contracts
+2025-11-19 19:16:00 | INFO     | Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+2025-11-19 19:16:00 | INFO     | Found 330 options for current expiry
+2025-11-19 19:16:00 | INFO     | Option chain cached | total_contracts=330 | expiry=2025-11-25
+2025-11-19 19:16:00 | INFO     | Refreshing option chain from Zerodha...
+2025-11-19 19:16:02 | INFO     | Found 981 BankNifty option contracts
+2025-11-19 19:16:02 | INFO     | Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+2025-11-19 19:16:02 | INFO     | Found 330 options for current expiry
+2025-11-19 19:16:02 | INFO     | Option chain cached | total_contracts=330 | expiry=2025-11-25
+2025-11-19 19:16:02 | DEBUG    | Found option contract: BANKNIFTY25NOV59000CE | strike=59000 | option_type=CE | expiry=2025-11-25
+2025-11-19 19:16:04 | INFO     | Fetched futures symbol dynamically: BANKNIFTY25NOVFUT
+2025-11-19 19:16:06 | INFO     | OMS initialized | lot_size=1 | hedge_legs=20 | futures_symbol=BANKNIFTY25NOVFUT | option_chain_expiry=2025-11-25 | option_chain_contracts=330 | option_chain_strikes=165
+2025-11-19 19:16:07 | DEBUG    | Using default freeze limit for BANKNIFTY25NOV59000CE: 595
+2025-11-19 19:16:07 | DEBUG    | Order quantity (35) within freeze limit (595 = 17 lots). Autoslice not required.
+2025-11-19 19:16:07 | INFO     | Placing MARKET (AMO) order | symbol=BANKNIFTY25NOV59000CE | quantity=35 | side=BUY | market_status=CLOSED | variety=AMO | autoslice=False | freeze_limit=595 | lots=1
+2025-11-19 19:16:07 | ERROR    | Failed to place order: BANKNIFTY25NOV59000CE | error=Market orders are blocked for index options using after market orders(AMO). Try placing a LIMIT order.
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 1103, in _place_market_order
+    order_id = self.kite.place_order(**order_params)
+  File "/opt/anaconda3/envs/banknifty_trading/lib/python3.10/site-packages/kiteconnect/connect.py", line 361, in place_order
+    return self._post("order.place",
+  File "/opt/anaconda3/envs/banknifty_trading/lib/python3.10/site-packages/kiteconnect/connect.py", line 865, in _post
+    return self._request(route, "POST", url_args=url_args, params=params, is_json=is_json, query_params=query_params)
+  File "/opt/anaconda3/envs/banknifty_trading/lib/python3.10/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.InputException: Market orders are blocked for index options using after market orders(AMO). Try placing a LIMIT order.
+2025-11-19 19:16:48 | INFO     | Loaded credentials from /Users/rohan/Downloads/Vridhi_Capital_Trading_System/configs/.env
+2025-11-19 19:16:48 | INFO     | Loaded saved access token from file
+2025-11-19 19:16:48 | INFO     | Initialized KiteConnect with saved access token
+2025-11-19 19:16:48 | INFO     | Already authenticated with valid token
+2025-11-19 19:16:50 | INFO     | Refreshing option chain from Zerodha...
+2025-11-19 19:16:52 | INFO     | Found 981 BankNifty option contracts
+2025-11-19 19:16:52 | INFO     | Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+2025-11-19 19:16:52 | INFO     | Found 330 options for current expiry
+2025-11-19 19:16:52 | INFO     | Option chain cached | total_contracts=330 | expiry=2025-11-25
+2025-11-19 19:16:52 | INFO     | Refreshing option chain from Zerodha...
+2025-11-19 19:16:54 | INFO     | Found 981 BankNifty option contracts
+2025-11-19 19:16:54 | INFO     | Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+2025-11-19 19:16:54 | INFO     | Found 330 options for current expiry
+2025-11-19 19:16:54 | INFO     | Option chain cached | total_contracts=330 | expiry=2025-11-25
+2025-11-19 19:16:54 | DEBUG    | Found option contract: BANKNIFTY25NOV59000CE | strike=59000 | option_type=CE | expiry=2025-11-25
+2025-11-19 19:16:57 | INFO     | Fetched futures symbol dynamically: BANKNIFTY25NOVFUT
+2025-11-19 19:16:59 | INFO     | OMS initialized | lot_size=1 | hedge_legs=20 | futures_symbol=BANKNIFTY25NOVFUT | option_chain_expiry=2025-11-25 | option_chain_contracts=330 | option_chain_strikes=165
+2025-11-19 19:16:59 | DEBUG    | Using default freeze limit for BANKNIFTY25NOV59000CE: 595
+2025-11-19 19:16:59 | DEBUG    | AMO LIMIT order price: 492
+2025-11-19 19:16:59 | DEBUG    | Order quantity (35) within freeze limit (595 = 17 lots). Autoslice not required.
+2025-11-19 19:16:59 | INFO     | Placing LIMIT (AMO) order | symbol=BANKNIFTY25NOV59000CE | quantity=35 | side=BUY | market_status=CLOSED | variety=AMO | order_type=LIMIT | price=492 | autoslice=False | freeze_limit=595 | lots=1
+2025-11-19 19:16:59 | DEBUG    | Order placed: BUY 35 BANKNIFTY25NOV59000CE | order_id=1991209102084169728
+2025-11-19 19:17:34 | INFO     | Loaded credentials from /Users/rohan/Downloads/Vridhi_Capital_Trading_System/configs/.env
+2025-11-19 19:17:40 | INFO     | Loaded saved access token from file
+2025-11-19 19:17:40 | INFO     | Initialized KiteConnect with saved access token
+2025-11-19 19:17:41 | INFO     | Already authenticated with valid token
+2025-11-19 19:17:43 | INFO     | Refreshing option chain from Zerodha...
+2025-11-19 19:17:45 | INFO     | Found 981 BankNifty option contracts
+2025-11-19 19:17:45 | INFO     | Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+2025-11-19 19:17:45 | INFO     | Found 330 options for current expiry
+2025-11-19 19:17:45 | INFO     | Option chain cached | total_contracts=330 | expiry=2025-11-25
+2025-11-19 19:17:45 | INFO     | Refreshing option chain from Zerodha...
+2025-11-19 19:17:47 | INFO     | Found 981 BankNifty option contracts
+2025-11-19 19:17:47 | INFO     | Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+2025-11-19 19:17:47 | INFO     | Found 330 options for current expiry
+2025-11-19 19:17:47 | INFO     | Option chain cached | total_contracts=330 | expiry=2025-11-25
+2025-11-19 19:17:47 | DEBUG    | Found option contract: BANKNIFTY25NOV59000CE | strike=59000 | option_type=CE | expiry=2025-11-25
+2025-11-19 19:17:49 | INFO     | Fetched futures symbol dynamically: BANKNIFTY25NOVFUT
+2025-11-19 19:17:51 | INFO     | OMS initialized | lot_size=1 | hedge_legs=20 | futures_symbol=BANKNIFTY25NOVFUT | option_chain_expiry=2025-11-25 | option_chain_contracts=330 | option_chain_strikes=165
+2025-11-19 19:19:24 | INFO     | Loaded credentials from /Users/rohan/Downloads/Vridhi_Capital_Trading_System/configs/.env
+2025-11-19 19:20:20 | INFO     | Loaded credentials from /Users/rohan/Downloads/Vridhi_Capital_Trading_System/configs/.env
+2025-11-19 19:20:24 | INFO     | Loaded saved access token from file
+2025-11-19 19:20:24 | INFO     | Initialized KiteConnect with saved access token
+2025-11-19 19:20:24 | INFO     | Already authenticated with valid token
+2025-11-19 19:20:27 | INFO     | Refreshing option chain from Zerodha...
+2025-11-19 19:20:30 | INFO     | Found 981 BankNifty option contracts
+2025-11-19 19:20:30 | INFO     | Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+2025-11-19 19:20:30 | INFO     | Found 330 options for current expiry
+2025-11-19 19:20:30 | INFO     | Option chain cached | total_contracts=330 | expiry=2025-11-25
+2025-11-19 19:20:30 | INFO     | Refreshing option chain from Zerodha...
+2025-11-19 19:20:32 | INFO     | Found 981 BankNifty option contracts
+2025-11-19 19:20:32 | INFO     | Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+2025-11-19 19:20:32 | INFO     | Found 330 options for current expiry
+2025-11-19 19:20:32 | INFO     | Option chain cached | total_contracts=330 | expiry=2025-11-25
+2025-11-19 19:20:32 | DEBUG    | Found option contract: BANKNIFTY25NOV59000CE | strike=59000 | option_type=CE | expiry=2025-11-25
+2025-11-19 19:20:35 | INFO     | Fetched futures symbol dynamically: BANKNIFTY25NOVFUT
+2025-11-19 19:20:37 | INFO     | OMS initialized | lot_size=1 | hedge_legs=20 | futures_symbol=BANKNIFTY25NOVFUT | option_chain_expiry=2025-11-25 | option_chain_contracts=330 | option_chain_strikes=165
+2025-11-19 19:20:41 | DEBUG    | Using default freeze limit for BANKNIFTY25NOV59000CE: 595
+2025-11-19 19:20:41 | DEBUG    | AMO LIMIT order price: 492
+2025-11-19 19:20:41 | DEBUG    | Order quantity (35) within freeze limit (595 = 17 lots). Autoslice not required.
+2025-11-19 19:20:41 | INFO     | Placing LIMIT (AMO) order | symbol=BANKNIFTY25NOV59000CE | quantity=35 | side=BUY | market_status=CLOSED | variety=AMO | order_type=LIMIT | price=492 | autoslice=False | freeze_limit=595 | lots=1
+2025-11-19 19:20:41 | DEBUG    | Order placed: BUY 35 BANKNIFTY25NOV59000CE | order_id=1991210034431811584

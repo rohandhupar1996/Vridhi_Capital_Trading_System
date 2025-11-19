@@ -296,17 +296,103 @@ def test_lorentzian_classifier_full():
     return True
 
 
-def test_different_neighbor_counts():
-    """Test 5: Different neighbor counts"""
+def test_real_trading_parameters():
+    """Test 5: Real Trading Parameters (neighbors=5, max_bars_back=2000, reentry=3,50)"""
     print("=" * 70)
-    print("TEST 5: Different Neighbor Counts")
+    print("TEST 5: Real Trading Parameters")
+    print("=" * 70)
+    
+    # Real trading parameters
+    neighbors_count = 5  # Real trading: 5 neighbors
+    max_bars_back = 2000  # Real trading: 2000 bars
+    reentry_window_start = 3  # Real trading: 3 bars
+    reentry_window_end = 50  # Real trading: 50 bars
+    
+    print(f"\n🔧 Testing with REAL TRADING PARAMETERS:")
+    print(f"   Neighbors count: {neighbors_count}")
+    print(f"   Max bars back: {max_bars_back}")
+    print(f"   Re-entry window: [{reentry_window_start}, {reentry_window_end}]")
+    
+    # Generate test data
+    n_bars = 3000  # More than max_bars_back
+    f1, f2, f3, f4, f5, prices = generate_test_features(n_bars)
+    
+    classifier = LorentzianClassifier(
+        neighbors_count=neighbors_count,
+        max_bars_back=max_bars_back,
+        feature_count=5
+    )
+    
+    print(f"\n🔧 Classifying {n_bars} bars...")
+    
+    start = time.perf_counter()
+    predictions, signals = classifier.classify_all(
+        f1, f2, f3, f4, f5, prices, start_bar=100
+    )
+    elapsed_us = (time.perf_counter() - start) * 1_000_000
+    
+    print(f"   ⏱️  Time: {elapsed_us:.2f} μs ({elapsed_us/1000:.2f} ms)")
+    print(f"   📊 Output shapes: predictions={predictions.shape}, signals={signals.shape}")
+    
+    # Check signal distribution
+    long_signals = np.sum(signals == 1)
+    short_signals = np.sum(signals == -1)
+    neutral_signals = np.sum(signals == 0)
+    
+    print(f"\n📊 Signal Distribution:")
+    print(f"   Long signals: {long_signals} ({long_signals/n_bars*100:.1f}%)")
+    print(f"   Short signals: {short_signals} ({short_signals/n_bars*100:.1f}%)")
+    print(f"   Neutral signals: {neutral_signals} ({neutral_signals/n_bars*100:.1f}%)")
+    
+    # Verify predictions are in valid range (for k=5)
+    valid_predictions = predictions[~np.isnan(predictions)]
+    if len(valid_predictions) > 0:
+        min_pred = np.min(valid_predictions)
+        max_pred = np.max(valid_predictions)
+        if abs(min_pred) <= neighbors_count and abs(max_pred) <= neighbors_count:
+            print(f"   ✅ Predictions in valid range: [{min_pred:.2f}, {max_pred:.2f}] (expected: [-{neighbors_count}, +{neighbors_count}])")
+        else:
+            print(f"   ⚠️  Predictions: [{min_pred:.2f}, {max_pred:.2f}] (expected: [-{neighbors_count}, +{neighbors_count}])")
+    
+    if len(predictions) == n_bars:
+        print(f"   ✅ Predictions generated: {len(predictions)} bars")
+    else:
+        print(f"   ❌ Expected {n_bars} predictions, got {len(predictions)}")
+        return False
+    
+    # Test single bar classification with real parameters
+    print(f"\n🔧 Testing single bar classification (real trading)...")
+    
+    # Add historical data
+    for i in range(500):
+        classifier.add_bar(f1[i], f2[i], f3[i], f4[i], f5[i], prices[i])
+    
+    start = time.perf_counter()
+    single_prediction = classifier.classify_single_bar(f1[500], f2[500], f3[500], f4[500], f5[500])
+    elapsed_us = (time.perf_counter() - start) * 1_000_000
+    
+    print(f"   ⏱️  Time: {elapsed_us:.2f} μs ({elapsed_us/1000:.2f} ms)")
+    print(f"   📊 Prediction: {single_prediction:.2f}")
+    
+    if abs(single_prediction) <= neighbors_count:
+        print(f"   ✅ Single bar prediction in valid range: [-{neighbors_count}, +{neighbors_count}]")
+    else:
+        print(f"   ⚠️  Single bar prediction: {single_prediction:.2f} (expected: [-{neighbors_count}, +{neighbors_count}])")
+    
+    return True
+
+
+def test_different_neighbor_counts():
+    """Test 6: Different neighbor counts"""
+    print("=" * 70)
+    print("TEST 6: Different Neighbor Counts")
     print("=" * 70)
     
     # Generate test data
     n_bars = 2000
     f1, f2, f3, f4, f5, prices = generate_test_features(n_bars)
     
-    neighbor_counts = [8, 12, 16]
+    neighbor_counts = [5, 8, 12]  # Include real trading value (5)
     
     for k in neighbor_counts:
         print(f"\n🔧 Testing neighbors={k}...")
@@ -339,23 +425,29 @@ def test_different_neighbor_counts():
 
 
 def test_performance():
-    """Test 6: Performance test (10k bars, 8 neighbors)"""
+    """Test 7: Performance test (10k bars, 5 neighbors, 2000 max_bars_back)"""
     print("=" * 70)
-    print("TEST 6: Performance Test (10k bars, 8 neighbors)")
+    print("TEST 7: Performance Test (Real Trading Parameters)")
     print("=" * 70)
+    
+    # Real trading parameters
+    neighbors_count = 5
+    max_bars_back = 2000
     
     # Generate larger dataset
     n_bars = 10000
     f1, f2, f3, f4, f5, prices = generate_test_features(n_bars)
     
     classifier = LorentzianClassifier(
-        neighbors_count=8,
-        max_bars_back=2000,
+        neighbors_count=neighbors_count,  # Real trading: 5
+        max_bars_back=max_bars_back,  # Real trading: 2000
         feature_count=5
     )
     
     print(f"\n🔧 Classifying {n_bars} bars...")
-    print("   Target: <50ms for 10k bars, 8 neighbors")
+    print(f"   Neighbors: {neighbors_count} (real trading)")
+    print(f"   Max bars back: {max_bars_back} (real trading)")
+    print("   Target: <50ms for 10k bars, 5 neighbors")
     
     # Warmup run (compile numba)
     _ = classifier.classify_all(f1[:500], f2[:500], f3[:500], f4[:500], f5[:500], 
@@ -381,7 +473,7 @@ def test_performance():
 
 
 def test_edge_cases():
-    """Test 7: Edge Cases"""
+    """Test 8: Edge Cases"""
     print("=" * 70)
     print("TEST 7: Edge Cases")
     print("=" * 70)
@@ -449,23 +541,33 @@ def test_edge_cases():
 
 
 def test_classify_single_bar():
-    """Test 8: Single bar classification"""
+    """Test 9: Single Bar Classification (Real Trading Parameters)"""
     print("=" * 70)
-    print("TEST 8: Single Bar Classification")
+    print("TEST 9: Single Bar Classification (Real Trading)")
     print("=" * 70)
+    
+    # Real trading parameters
+    neighbors_count = 5
+    max_bars_back = 2000
     
     # Generate test data
     n_bars = 1000
     f1, f2, f3, f4, f5, prices = generate_test_features(n_bars)
     
     # Add historical data first
-    classifier = LorentzianClassifier(neighbors_count=8, max_bars_back=2000, feature_count=5)
+    classifier = LorentzianClassifier(
+        neighbors_count=neighbors_count,  # Real trading: 5
+        max_bars_back=max_bars_back,  # Real trading: 2000
+        feature_count=5
+    )
     
     # Add bars to history
     for i in range(500):
         classifier.add_bar(f1[i], f2[i], f3[i], f4[i], f5[i], prices[i])
     
-    print("\n🔧 Classifying single bar...")
+    print(f"\n🔧 Classifying single bar...")
+    print(f"   Neighbors: {neighbors_count} (real trading)")
+    print(f"   Max bars back: {max_bars_back} (real trading)")
     
     start = time.perf_counter()
     prediction = classifier.classify_single_bar(f1[500], f2[500], f3[500], f4[500], f5[500])
@@ -474,8 +576,7 @@ def test_classify_single_bar():
     print(f"   ⏱️  Time: {elapsed_us:.2f} μs ({elapsed_us/1000:.2f} ms)")
     print(f"   📊 Prediction: {prediction:.2f}")
     
-    # Verify prediction is reasonable
-    neighbors_count = 8
+    # Verify prediction is reasonable (for k=5)
     if abs(prediction) <= neighbors_count:
         print(f"   ✅ Prediction in valid range: [-{neighbors_count}, +{neighbors_count}]")
     else:
@@ -497,10 +598,11 @@ def main():
         ("Label Generation", test_generate_labels),
         ("Find K-Nearest Neighbors", test_find_k_nearest_neighbors),
         ("Full Lorentzian Classifier", test_lorentzian_classifier_full),
+        ("Real Trading Parameters", test_real_trading_parameters),
         ("Different Neighbor Counts", test_different_neighbor_counts),
-        ("Performance Test", test_performance),
+        ("Performance Test (Real Trading)", test_performance),
         ("Edge Cases", test_edge_cases),
-        ("Single Bar Classification", test_classify_single_bar),
+        ("Single Bar Classification (Real Trading)", test_classify_single_bar),
     ]
     
     passed = 0
