@@ -1,0 +1,23 @@
+2025-11-20 20:32:41 | INFO     | Loaded credentials from /Users/rohan/Downloads/Vridhi_Capital_Trading_System/configs/.env
+2025-11-20 20:32:41 | INFO     | Loaded saved access token from file
+2025-11-20 20:32:41 | INFO     | Initialized KiteConnect with saved access token
+2025-11-20 20:32:41 | INFO     | OAuth callback server started on http://localhost:8080
+2025-11-20 20:32:41 | INFO     | Generated login URL: https://kite.zerodha.com/connect/login?api_key=t2z5newnxxa7nkhs&v=3&redirect_url=http://localhost:8080
+2025-11-20 20:32:47 | INFO     | ✅ Request token captured automatically!
+2025-11-20 20:32:47 | INFO     | Saved access token to file
+2025-11-20 20:32:47 | INFO     | Successfully authenticated with Zerodha
+2025-11-20 20:32:47 | INFO     | Saved access token to file
+2025-11-20 20:32:47 | INFO     | ✅ Login successful!
+2025-11-20 20:32:49 | INFO     | Stored 325 candles to DB | symbol=BANKNIFTY25NOVFUT | timeframe=15min | table=ohlcv_zerodha
+2025-11-20 20:40:23 | INFO     | Loaded credentials from /Users/rohan/Downloads/Vridhi_Capital_Trading_System/configs/.env
+2025-11-20 20:40:23 | INFO     | Loaded saved access token from file
+2025-11-20 20:40:23 | INFO     | Initialized KiteConnect with saved access token
+2025-11-20 20:40:23 | INFO     | Already authenticated with valid token
+2025-11-20 20:40:24 | INFO     | Already authenticated with valid token
+2025-11-20 20:40:26 | INFO     | Stored 325 candles to DB | symbol=BANKNIFTY25NOVFUT | timeframe=15min | table=ohlcv_zerodha
+2025-11-20 20:45:13 | INFO     | Loaded credentials from /Users/rohan/Downloads/Vridhi_Capital_Trading_System/configs/.env
+2025-11-20 20:45:13 | INFO     | Loaded saved access token from file
+2025-11-20 20:45:13 | INFO     | Initialized KiteConnect with saved access token
+2025-11-20 20:45:13 | INFO     | Already authenticated with valid token
+2025-11-20 20:45:14 | INFO     | Already authenticated with valid token
+2025-11-20 20:45:16 | INFO     | Stored 325 candles to DB | symbol=BANKNIFTY25NOVFUT | timeframe=15min | table=ohlcv_zerodha

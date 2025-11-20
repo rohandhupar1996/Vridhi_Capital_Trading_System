@@ -326,7 +326,12 @@ class MasterBacktester:
             return
         
         self.current_trade.exit_bar = bar
-        self.current_trade.exit_time = self.data.loc[bar, 'timestamp']
+        # Exit time is the close of the exit candle (timestamp + 15min for 15min timeframe)
+        # Timestamp represents candle opening, but we exit on candle close
+        exit_candle_open_time = self.data.loc[bar, 'timestamp']
+        # Add 15 minutes to get the candle close time (for 15min timeframe)
+        from datetime import timedelta
+        self.current_trade.exit_time = exit_candle_open_time + timedelta(minutes=15)
         self.current_trade.exit_price = self.data.loc[bar, 'close']
         self.current_trade.exit_reason = reason
         self.current_trade.bars_held = bar - self.current_trade.entry_bar

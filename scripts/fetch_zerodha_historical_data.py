@@ -467,8 +467,7 @@ def main():
     print(f"   Contract: Current month's expiry ({futures_symbol})")
     print()
     
-    # Timeframes to fetch (15min only for volume profile analysis)
-    # Note: Volume profile requires 15min candles for optimal performance
+    # Only fetch 15min data (system requirement)
     timeframes = [
         ('15min', '15minute'),
     ]

@@ -56,7 +56,7 @@ class SingleTimeframeBacktester:
 
         # Initialize exit strategy based on config
         # Support both new and legacy exit mode names
-        exit_mode = config.exit_mode
+        exit_mode = getattr(config, 'exit_mode', 'default')
         
         # Map legacy names to new names
         legacy_map = {
@@ -252,7 +252,12 @@ class SingleTimeframeBacktester:
 
         row = self._data.loc[bar]
         self._current_trade.exit_bar = bar
-        self._current_trade.exit_time = row["timestamp"]
+        # Exit time is the close of the exit candle (timestamp + 15min for 15min timeframe)
+        # Timestamp represents candle opening, but we exit on candle close
+        exit_candle_open_time = row["timestamp"]
+        # Add 15 minutes to get the candle close time (for 15min timeframe)
+        from datetime import timedelta
+        self._current_trade.exit_time = exit_candle_open_time + timedelta(minutes=15)
         # Use provided exit_price if available (for volume exits), otherwise use close
         self._current_trade.exit_price = float(exit_price) if exit_price is not None else float(row["close"])
         self._current_trade.exit_reason = reason

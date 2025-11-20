@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Optional
 
 
-@dataclass(slots=True)
+@dataclass
 class DataStoreConfig:
     """Database and credential settings for historical data storage."""
 
@@ -26,7 +26,7 @@ class DataStoreConfig:
     project_root: Optional[Path] = None
 
 
-@dataclass(slots=True)
+@dataclass
 class BacktestConfig:
     """High-level parameters shared across backtest engines."""
 
@@ -48,9 +48,18 @@ class BacktestConfig:
     # Optional output overrides
     trades_output: Optional[Path] = None
     table_name: str = "ohlcv"  # Use "ohlcv_zerodha" for Zerodha data
+    # Exit strategy settings
+    exit_mode: str = "default"  # 'default', 'volume_both', 'volume_long', 'volume_short'
+    # Volume exit settings (optimized for performance with Numba JIT)
+    volume_exit_lookback: int = 240  # Optimized: 240 bars (2x faster than Pine Script's 360)
+    volume_exit_num_rows: int = 60   # Optimized: 60 rows (2x faster than Pine Script's 100)
+    volume_exit_value_area: float = 0.7  # Pine Script default: 70% value area
+    volume_exit_peak_percent: float = 0.09  # Pine Script default: 9% for peak nodes
+    volume_exit_trough_percent: float = 0.07  # Pine Script default: 7% for trough nodes
+    volume_exit_threshold: float = 0.01  # Pine Script default: 1% threshold
 
 
-@dataclass(slots=True)
+@dataclass
 class ZerodhaConfig:
     """Zerodha broker configuration and credentials."""
     
@@ -62,7 +71,7 @@ class ZerodhaConfig:
     auto_reconnect: bool = True
 
 
-@dataclass(slots=True)
+@dataclass
 class AppConfig:
     """Aggregate configuration for the entire trading system."""
 

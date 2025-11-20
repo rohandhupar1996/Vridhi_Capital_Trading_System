@@ -101,10 +101,9 @@ def main() -> None:
     print("\n🔄 Starting data collection...")
     print("    This will take approximately 30-60 seconds...")
 
+    # Only fetch 15min data (system requirement)
     requests = [
-        TimeframeRequest("5min", Interval.in_5_minute, 6000),
         TimeframeRequest("15min", Interval.in_15_minute, 6000),
-        TimeframeRequest("1hour", Interval.in_1_hour, 6000),
     ]
 
     results = collector.fetch_timeframes(
