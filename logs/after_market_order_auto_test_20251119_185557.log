@@ -1,0 +1,96 @@
+
+======================================================================
+🌙 AFTER-MARKET ORDER TEST - AUTOMATED (VERIFICATION ONLY)
+======================================================================
+
+⚠️  NOTE: This version does NOT place actual orders
+⚠️  It only verifies API connections and setup
+⚠️  For actual order placement, use test_after_market_order.py
+
+======================================================================
+STEP 1: Check Market Hours
+======================================================================
+Current time: 2025-11-19 23:25:59 IST
+Market status: CLOSED (After Hours)
+✅ Market is CLOSED - Orders would be QUEUED (safe for testing)
+
+======================================================================
+STEP 2: Authentication
+======================================================================
+[2025-11-19 18:55:59] [test_after_market_order_auto] INFO: Loaded saved access token from file
+[2025-11-19 18:55:59] [test_after_market_order_auto] INFO: Initialized KiteConnect with saved access token
+[2025-11-19 18:55:59] [test_after_market_order_auto] INFO: Already authenticated with valid token
+✅ Authenticated as: Sanjay Dhupar (ODY787)
+
+======================================================================
+STEP 3: Get Futures & Option Chain
+======================================================================
+[2025-11-19 18:56:03] [zerodha_futures_utils] INFO: Found nearest futures contract | symbol=BANKNIFTY25NOVFUT | expiry=2025-11-25 | token=9485058
+✅ Futures: BANKNIFTY25NOVFUT (token: 9485058)
+⚠️  Cannot get futures LTP (market closed): 'NSE_FUT:BANKNIFTY25NOVFUT'
+[2025-11-19 18:56:03] [test_after_market_order_auto] INFO: Refreshing option chain from Zerodha...
+[2025-11-19 18:56:07] [test_after_market_order_auto] INFO: Found 981 BankNifty option contracts
+[2025-11-19 18:56:07] [test_after_market_order_auto] INFO: Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+[2025-11-19 18:56:07] [test_after_market_order_auto] INFO: Found 330 options for current expiry
+[2025-11-19 18:56:07] [test_after_market_order_auto] INFO: Option chain cached | total_contracts=330 | expiry=2025-11-25
+[2025-11-19 18:56:07] [test_after_market_order_auto] INFO: Refreshing option chain from Zerodha...
+[2025-11-19 18:56:10] [test_after_market_order_auto] INFO: Found 981 BankNifty option contracts
+[2025-11-19 18:56:10] [test_after_market_order_auto] INFO: Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+[2025-11-19 18:56:10] [test_after_market_order_auto] INFO: Found 330 options for current expiry
+[2025-11-19 18:56:10] [test_after_market_order_auto] INFO: Option chain cached | total_contracts=330 | expiry=2025-11-25
+✅ ATM strike: 59000
+
+======================================================================
+STEP 4: Get Option Symbol
+======================================================================
+✅ Option symbol: BANKNIFTY25NOV59000CE
+✅ Option LTP: ₹492.00
+
+======================================================================
+STEP 5: Initialize Order Manager
+======================================================================
+ℹ️  Initializing in DRY-RUN mode for safety
+[2025-11-19 18:56:13] [zerodha_futures_utils] INFO: Found nearest futures contract | symbol=BANKNIFTY25NOVFUT | expiry=2025-11-25 | token=9485058
+[2025-11-19 18:56:13] [test_after_market_order_auto] INFO: Fetched futures symbol dynamically: BANKNIFTY25NOVFUT
+[2025-11-19 18:56:13] [option_chain_manager] INFO: Refreshing option chain from Zerodha...
+[2025-11-19 18:56:16] [option_chain_manager] INFO: Found 981 BankNifty option contracts
+[2025-11-19 18:56:16] [option_chain_manager] INFO: Current expiry: 2025-11-25 | expiry_date=2025-11-25 | days_until_expiry=6
+[2025-11-19 18:56:16] [option_chain_manager] INFO: Found 330 options for current expiry
+[2025-11-19 18:56:16] [option_chain_manager] INFO: Option chain cached | total_contracts=330 | expiry=2025-11-25
+[2025-11-19 18:56:16] [test_after_market_order_auto] INFO: OMS initialized | lot_size=1 | hedge_legs=20 | futures_symbol=BANKNIFTY25NOVFUT | option_chain_expiry=2025-11-25 | option_chain_contracts=330 | option_chain_strikes=165
+✅ Order Manager initialized (DRY-RUN mode)
+
+======================================================================
+STEP 6: Verify Order Parameters
+======================================================================
+✅ Order Parameters Verified:
+   Symbol: BANKNIFTY25NOV59000CE
+   Quantity: 35 (1 lot)
+   Exchange: NFO
+   Product: NRML
+   Order Type: MARKET
+   Transaction Type: BUY
+
+======================================================================
+TEST SUMMARY
+======================================================================
+✅ Authentication: PASS
+✅ Futures Data: PASS
+✅ Option Chain: PASS
+✅ Order Manager: PASS
+✅ Market Status: CLOSED (After Hours)
+
+✅ ALL CHECKS PASSED!
+
+✅ READY FOR REAL ORDER TEST:
+   Market is CLOSED - Safe to place test orders
+   Run: python scripts/test_after_market_order.py
+   Orders will be QUEUED and execute at 9:15 AM next day
+
+Next Steps:
+1. ✅ Setup verified - Ready for real test
+2. Run: python scripts/test_after_market_order.py
+3. Type 'CONFIRM' when prompted
+4. Type 'PLACE' to place real order
+5. Verify order on Zerodha dashboard
+6. Cancel order before 9:15 AM next day (optional)

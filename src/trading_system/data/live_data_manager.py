@@ -84,7 +84,7 @@ class LiveDataManager:
         self.table_name = "ohlcv_zerodha" if use_zerodha_table else "ohlcv"
         
     def initialize(self) -> bool:
-        """Load initial data from DB into memory buffer"""
+        """Load initial data from DB into memory buffer (symbol-specific)"""
         try:
             # Ensure database directory exists
             self.db_path.parent.mkdir(parents=True, exist_ok=True)
@@ -120,20 +120,28 @@ class LiveDataManager:
             )
             self._conn.commit()
             
-            # Load last max_bars_back bars from DB
-            query = f"""
-                SELECT timestamp, open, high, low, close, volume
-                FROM {self.table_name}
-                WHERE symbol = ? AND timeframe = ?
-                ORDER BY timestamp DESC
-                LIMIT ?
-            """
+            # Load last max_bars_back bars from DB (symbol-specific)
+            if self.symbol:
+                query = f"""
+                    SELECT timestamp, open, high, low, close, volume
+                    FROM {self.table_name}
+                    WHERE symbol = ? AND timeframe = ?
+                    ORDER BY timestamp DESC
+                    LIMIT ?
+                """
+                params = (self.symbol, self.timeframe, self.max_bars_back)
+            else:
+                # Empty symbol means contract-agnostic loading
+                query = f"""
+                    SELECT timestamp, open, high, low, close, volume
+                    FROM {self.table_name}
+                    WHERE timeframe = ?
+                    ORDER BY timestamp DESC
+                    LIMIT ?
+                """
+                params = (self.timeframe, self.max_bars_back)
             
-            df = pd.read_sql_query(
-                query, 
-                self._conn, 
-                params=(self.symbol, self.timeframe, self.max_bars_back)
-            )
+            df = pd.read_sql_query(query, self._conn, params=params)
             
             if df.empty:
                 self.logger.warning("No historical data found, starting with empty buffer")
@@ -157,6 +165,7 @@ class LiveDataManager:
             self.logger.info(
                 f"Initialized buffer",
                 bars=len(self._buffer),
+                symbol=self.symbol or "ANY",
                 start=self._buffer[0].timestamp.isoformat() if self._buffer else None,
                 end=self._buffer[-1].timestamp.isoformat() if self._buffer else None
             )
@@ -164,6 +173,92 @@ class LiveDataManager:
             
         except Exception as e:
             self.logger.error(f"Failed to initialize: {e}", exc_info=True)
+            return False
+    
+    def initialize_contract_agnostic(self) -> bool:
+        """
+        Load historical data by timeframe only (ignores symbol for continuity across contract rollovers)
+        
+        This allows seamless continuation when contracts rollover (e.g., NOV → DEC).
+        Data from any symbol with the same timeframe is loaded.
+        """
+        # Temporarily clear symbol for contract-agnostic loading
+        original_symbol = self.symbol
+        self.symbol = ""  # Empty symbol triggers contract-agnostic query
+        
+        try:
+            success = self.initialize()
+            return success
+        finally:
+            # Restore original symbol (will be updated later with update_symbol())
+            self.symbol = original_symbol
+    
+    def update_symbol(self, new_symbol: str) -> None:
+        """
+        Update symbol after contract rollover
+        
+        Args:
+            new_symbol: New futures symbol (e.g., "BANKNIFTY25DECFUT")
+        """
+        old_symbol = self.symbol
+        self.symbol = new_symbol
+        
+        self.logger.info(
+            f"Symbol updated",
+            old_symbol=old_symbol or "NONE",
+            new_symbol=new_symbol
+        )
+    
+    def check_and_update_contract_rollover(self, kite) -> bool:
+        """
+        Check contract expiry from option chain and update symbol if rollover needed.
+        
+        Rollover Logic:
+        - Gets expiry date from option chain (BANKNIFTY CE/PE options) - source of truth
+        - If today is AFTER expiry date, switch to next contract
+        - Example: Nov expiry on Nov 25 (from option chain), on Nov 26 switch to DEC
+        - NO hardcoded day of week - uses actual expiry date from option chain
+        
+        Args:
+            kite: Authenticated KiteConnect instance
+            
+        Returns:
+            True if rollover happened, False otherwise
+        """
+        try:
+            from .zerodha_futures_utils import get_futures_symbol_with_rollover
+            
+            # Get symbol with rollover logic (uses option chain expiry)
+            new_symbol, new_token, expiry_date = get_futures_symbol_with_rollover(kite)
+            
+            if not new_symbol:
+                self.logger.warning("Could not get futures symbol with rollover")
+                return False
+            
+            # Check if symbol needs to be updated
+            if new_symbol != self.symbol:
+                old_symbol = self.symbol
+                self.update_symbol(new_symbol)
+                
+                self.logger.info(
+                    f"Contract rollover executed",
+                    old_symbol=old_symbol or "NONE",
+                    new_symbol=new_symbol,
+                    expiry_date=expiry_date.isoformat() if expiry_date else "UNKNOWN",
+                    reason="Expiry passed, switched to next contract"
+                )
+                return True
+            else:
+                # Same symbol, no rollover needed
+                self.logger.debug(
+                    f"No rollover needed",
+                    current_symbol=self.symbol,
+                    expiry_date=expiry_date.isoformat() if expiry_date else "UNKNOWN"
+                )
+                return False
+                
+        except Exception as e:
+            self.logger.error(f"Error checking contract rollover: {e}", exc_info=True)
             return False
     
     def add_new_bar(

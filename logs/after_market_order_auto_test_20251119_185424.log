@@ -1,0 +1,33 @@
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/scripts/test_after_market_order_auto.py", line 129, in test_after_market_order_auto
+    authenticator = ZerodhaAuthenticator(credentials, logger)
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/broker/zerodha_auth.py", line 63, in __init__
+    self.token_file = Path(token_file)
+  File "/opt/anaconda3/envs/banknifty_trading/lib/python3.10/pathlib.py", line 960, in __new__
+    self = cls._from_parts(args)
+  File "/opt/anaconda3/envs/banknifty_trading/lib/python3.10/pathlib.py", line 594, in _from_parts
+    drv, root, parts = self._parse_args(args)
+  File "/opt/anaconda3/envs/banknifty_trading/lib/python3.10/pathlib.py", line 578, in _parse_args
+    a = os.fspath(a)
+TypeError: expected str, bytes or os.PathLike object, not ComponentLogger
+
+======================================================================
+🌙 AFTER-MARKET ORDER TEST - AUTOMATED (VERIFICATION ONLY)
+======================================================================
+
+⚠️  NOTE: This version does NOT place actual orders
+⚠️  It only verifies API connections and setup
+⚠️  For actual order placement, use test_after_market_order.py
+
+======================================================================
+STEP 1: Check Market Hours
+======================================================================
+Current time: 2025-11-19 23:24:25 IST
+Market status: CLOSED (After Hours)
+✅ Market is CLOSED - Orders would be QUEUED (safe for testing)
+
+======================================================================
+STEP 2: Authentication
+======================================================================
+
+❌ Error: expected str, bytes or os.PathLike object, not ComponentLogger

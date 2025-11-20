@@ -132,8 +132,19 @@ if __name__ == "__main__":
     
     app_config = AppConfig()
     
-    # Check if user wants to use Zerodha data (passed as argument or env var)
-    use_zerodha = len(sys.argv) > 1 and sys.argv[1] == "--zerodha"
+    # Parse arguments
+    use_zerodha = "--zerodha" in sys.argv
+    exit_mode = None
+    
+    # Check for exit mode arguments
+    if "--volume-both" in sys.argv:
+        exit_mode = "volume_both"
+    elif "--volume-long" in sys.argv:
+        exit_mode = "volume_long"
+    elif "--volume-short" in sys.argv:
+        exit_mode = "volume_short"
+    elif "--default" in sys.argv:
+        exit_mode = "default"
     
     if use_zerodha:
         # Override config for Zerodha data
@@ -143,6 +154,12 @@ if __name__ == "__main__":
         print(f"🔷 Using Zerodha data: {app_config.backtest.table_name}")
         print(f"   Symbol: {app_config.backtest.symbol}")
         print(f"   Timeframe: {app_config.backtest.timeframe}\n")
+    
+    if exit_mode:
+        app_config.backtest.exit_mode = exit_mode
+        print(f"🔷 Exit mode: {exit_mode}")
+        if exit_mode in ['volume_both', 'volume_long', 'volume_short']:
+            print(f"   Volume lookback: {app_config.backtest.volume_exit_lookback} bars\n")
 
     backtester = SingleTimeframeBacktester(
         config=app_config.backtest,
