@@ -1,0 +1,6 @@
+2025-11-19 18:00:48 | INFO     | Loaded credentials from /Users/rohan/Downloads/Vridhi_Capital_Trading_System/configs/.env
+2025-11-19 18:00:48 | INFO     | Loaded saved access token from file
+2025-11-19 18:00:48 | INFO     | Initialized KiteConnect with saved access token
+2025-11-19 18:00:48 | INFO     | Already authenticated with valid token
+2025-11-19 18:00:49 | INFO     | Already authenticated with valid token
+2025-11-19 18:00:51 | INFO     | Stored 300 candles to DB | symbol=BANKNIFTY25NOVFUT | timeframe=15min | table=ohlcv_zerodha

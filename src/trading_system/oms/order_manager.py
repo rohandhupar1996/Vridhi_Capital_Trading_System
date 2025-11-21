@@ -949,6 +949,65 @@ class OrderManager:
             
             return True
     
+    def _is_market_open(self) -> bool:
+        """
+        Check if market is currently open (9:15 AM - 3:30 PM IST)
+        
+        Returns:
+            True if market is open, False otherwise
+        """
+        try:
+            from datetime import datetime
+            import pytz
+            
+            # Get current IST time
+            ist = pytz.timezone('Asia/Kolkata')
+            now = datetime.now(ist)
+            current_time = now.time()
+            
+            # Market hours: 9:15 AM - 3:30 PM IST
+            market_open = datetime.strptime("09:15", "%H:%M").time()
+            market_close = datetime.strptime("15:30", "%H:%M").time()
+            
+            # Check if current time is within market hours
+            return market_open <= current_time <= market_close
+        except Exception as e:
+            self.logger.warning(f"Error checking market status: {e}, assuming market is closed")
+            return False
+    
+    def _get_freeze_limit(self, symbol: str) -> int:
+        """
+        Get freeze limit quantity for an instrument
+        BANKNIFTY freeze limit: 595 (17 lots = 595 units)
+        Uses API if available, otherwise returns default
+        
+        Args:
+            symbol: Trading symbol (e.g., BANKNIFTY25NOV59000CE)
+            
+        Returns:
+            Freeze limit quantity, or 595 (default for BANKNIFTY) if API fails
+        """
+        try:
+            # Try to get instrument details from quote
+            instrument_key = f"NFO:{symbol}"
+            quote = self.kite.quote(instrument_key)
+            
+            if instrument_key in quote:
+                instrument_data = quote[instrument_key]
+                # Check for freeze limit in instrument data
+                freeze_limit = instrument_data.get('freeze_qty', instrument_data.get('freeze_quantity', None))
+                if freeze_limit and freeze_limit > 0:
+                    self.logger.debug(f"Freeze limit for {symbol}: {freeze_limit}")
+                    return freeze_limit
+        except Exception as e:
+            self.logger.debug(f"Could not get freeze limit from API for {symbol}: {e}")
+        
+        # Default freeze limit for BANKNIFTY: 595 (17 lots * 35 units per lot)
+        # This is standard across all BANKNIFTY instruments
+        default_freeze_limit = 595  # 17 lots * 35 units per lot
+        self.logger.debug(f"Using default freeze limit for {symbol}: {default_freeze_limit}")
+        return default_freeze_limit
+    
     def _place_market_order(
         self,
         symbol: str,
@@ -956,7 +1015,9 @@ class OrderManager:
         transaction_type: str
     ) -> Optional[str]:
         """
-        Place MARKET order with NRML product
+        Place MARKET or AMO order with NRML product
+        - MARKET order during market hours (9:15 AM - 3:30 PM IST)
+        - AMO (After Market Order) during after-market hours
         
         Args:
             symbol: Trading symbol
@@ -983,15 +1044,92 @@ class OrderManager:
             rate_limiter = get_rate_limiter()
             rate_limiter.wait_if_needed(EndpointType.ORDER)
             
-            order_id = self.kite.place_order(
-                variety=self.kite.VARIETY_REGULAR,
-                exchange=self.kite.EXCHANGE_NFO,
-                tradingsymbol=symbol,
-                transaction_type=transaction_type,
+            # Determine variety based on market status
+            # According to Zerodha API: variety='regular' for market hours, variety='amo' for after-market hours
+            is_open = self._is_market_open()
+            if is_open:
+                variety = 'regular'  # Market hours: Regular order (executes immediately)
+                order_type = self.kite.ORDER_TYPE_MARKET  # MARKET orders allowed during market hours
+                order_type_name = "MARKET (REGULAR)"
+                limit_price = None  # Not needed for MARKET orders
+            else:
+                variety = 'amo'  # After market hours: AMO (queued for next market open)
+                # AMO orders for index options (BankNifty) must be LIMIT orders, not MARKET
+                order_type = self.kite.ORDER_TYPE_LIMIT  # LIMIT orders required for AMO index options
+                order_type_name = "LIMIT (AMO)"
+                # Get current LTP as limit price for AMO orders
+                try:
+                    instrument_key = f"NFO:{symbol}"
+                    quote = self.kite.quote(instrument_key)
+                    if instrument_key in quote:
+                        limit_price = quote[instrument_key].get('last_price', self.futures_ltp)
+                        if not limit_price or limit_price <= 0:
+                            limit_price = self.futures_ltp
+                    else:
+                        limit_price = self.futures_ltp
+                except Exception as e:
+                    self.logger.warning(f"Could not get LTP for {symbol}, using futures LTP: {e}")
+                    limit_price = self.futures_ltp or 0
+                
+                if not limit_price or limit_price <= 0:
+                    self.logger.error(f"Cannot place AMO order: No valid price available for {symbol}")
+                    return None
+            
+            # Check if order needs slicing (exceeds freeze limit)
+            # BANKNIFTY freeze limit: 595 (17 lots)
+            freeze_limit = self._get_freeze_limit(symbol)
+            should_slice = quantity > freeze_limit
+            
+            # Build order parameters
+            order_params = {
+                'variety': variety,  # 'regular' for market hours, 'amo' for after-market hours
+                'exchange': self.kite.EXCHANGE_NFO,
+                'tradingsymbol': symbol,
+                'transaction_type': transaction_type,
+                'quantity': quantity,
+                'product': self.kite.PRODUCT_NRML,  # NRML for options
+                'order_type': order_type  # MARKET during market hours, LIMIT for AMO
+            }
+            
+            # Add price parameter for LIMIT orders (AMO)
+            if order_type == self.kite.ORDER_TYPE_LIMIT:
+                order_params['price'] = limit_price
+                self.logger.debug(f"AMO LIMIT order price: {limit_price}")
+            
+            # Enable autoslice if order exceeds freeze limit
+            # autoslice=True enables automatic order slicing for quantities above freeze limits
+            # Freeze limit for BANKNIFTY: 595 (17 lots * 35 units per lot)
+            if should_slice:
+                order_params['autoslice'] = True
+                self.logger.warning(
+                    f"Order quantity ({quantity}) exceeds freeze limit ({freeze_limit} = {freeze_limit//35} lots). "
+                    f"Enabling autoslice for automatic order slicing."
+                )
+            else:
+                self.logger.debug(
+                    f"Order quantity ({quantity}) within freeze limit ({freeze_limit} = {freeze_limit//35} lots). "
+                    f"Autoslice not required."
+                )
+            
+            # Market protection: -1 for automatic market protection (optional, only for MARKET orders)
+            # if order_type == self.kite.ORDER_TYPE_MARKET:
+            #     order_params['market_protection'] = -1  # Automatic market protection
+            
+            self.logger.info(
+                f"Placing {order_type_name} order",
+                symbol=symbol,
                 quantity=quantity,
-                product=self.kite.PRODUCT_NRML,  # NRML for options
-                order_type=self.kite.ORDER_TYPE_MARKET
+                side=transaction_type,
+                market_status="OPEN" if is_open else "CLOSED",
+                variety=variety.upper(),
+                order_type="MARKET" if order_type == self.kite.ORDER_TYPE_MARKET else "LIMIT",
+                price=limit_price if order_type == self.kite.ORDER_TYPE_LIMIT else None,
+                autoslice=order_params.get('autoslice', False),
+                freeze_limit=freeze_limit,
+                lots=quantity//35
             )
+            
+            order_id = self.kite.place_order(**order_params)
             
             self.logger.debug(
                 f"Order placed: {transaction_type} {quantity} {symbol}",

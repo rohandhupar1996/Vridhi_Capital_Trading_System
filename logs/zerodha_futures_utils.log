@@ -13,3 +13,8 @@
 2025-11-20 20:45:16 | DEBUG    | Found active contract: BANKNIFTY25DECFUT, expiry: 2025-12-30
 2025-11-20 20:45:16 | DEBUG    | Found active contract: BANKNIFTY26JANFUT, expiry: 2026-01-27
 2025-11-20 20:45:16 | INFO     | Found nearest futures contract | symbol=BANKNIFTY25NOVFUT | expiry=2025-11-25 | token=9485058
+2025-11-20 20:55:14 | DEBUG    | Total BANKNIFTY instruments found: 996
+2025-11-20 20:55:14 | DEBUG    | Found active contract: BANKNIFTY25NOVFUT, expiry: 2025-11-25
+2025-11-20 20:55:14 | DEBUG    | Found active contract: BANKNIFTY25DECFUT, expiry: 2025-12-30
+2025-11-20 20:55:14 | DEBUG    | Found active contract: BANKNIFTY26JANFUT, expiry: 2026-01-27
+2025-11-20 20:55:14 | INFO     | Found nearest futures contract | symbol=BANKNIFTY25NOVFUT | expiry=2025-11-25 | token=9485058

@@ -1,0 +1,662 @@
+2025-11-19 02:19:38 | ERROR    | Error getting expiry from option chain: 'MockDateTime' object has no attribute 'strptime'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/data/zerodha_futures_utils.py", line 154, in get_monthly_expiry_from_option_chain
+    exp_date = datetime.strptime(expiry, '%Y-%m-%d').date()
+AttributeError: 'MockDateTime' object has no attribute 'strptime'
+2025-11-19 02:19:38 | ERROR    | Error getting futures symbol and token: 'MockDateTime' object has no attribute 'strptime'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/data/zerodha_futures_utils.py", line 345, in get_current_month_futures_symbol_and_token
+    exp_date = datetime.strptime(expiry, '%Y-%m-%d').date()
+AttributeError: 'MockDateTime' object has no attribute 'strptime'
+2025-11-19 02:19:38 | ERROR    | Error getting expiry from option chain: 'MockDateTime' object has no attribute 'strptime'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/data/zerodha_futures_utils.py", line 154, in get_monthly_expiry_from_option_chain
+    exp_date = datetime.strptime(expiry, '%Y-%m-%d').date()
+AttributeError: 'MockDateTime' object has no attribute 'strptime'
+2025-11-19 02:19:38 | ERROR    | Error getting futures symbol and token: 'MockDateTime' object has no attribute 'strptime'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/data/zerodha_futures_utils.py", line 345, in get_current_month_futures_symbol_and_token
+    exp_date = datetime.strptime(expiry, '%Y-%m-%d').date()
+AttributeError: 'MockDateTime' object has no attribute 'strptime'
+2025-11-19 02:19:38 | ERROR    | Error getting futures symbol: 'MockDateTime' object has no attribute 'strptime'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/data/zerodha_futures_utils.py", line 47, in get_current_month_futures_symbol
+    exp_date = datetime.strptime(expiry, '%Y-%m-%d')
+AttributeError: 'MockDateTime' object has no attribute 'strptime'
+2025-11-19 02:19:38 | ERROR    | Error getting futures token: 'MockDateTime' object has no attribute 'strptime'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/data/zerodha_futures_utils.py", line 99, in get_current_month_futures_token
+    exp_date = datetime.strptime(expiry, '%Y-%m-%d')
+AttributeError: 'MockDateTime' object has no attribute 'strptime'
+2025-11-19 02:19:38 | ERROR    | Error getting futures symbol and token: 'MockDateTime' object has no attribute 'strptime'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/data/zerodha_futures_utils.py", line 345, in get_current_month_futures_symbol_and_token
+    exp_date = datetime.strptime(expiry, '%Y-%m-%d').date()
+AttributeError: 'MockDateTime' object has no attribute 'strptime'
+2025-11-19 02:19:38 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 1, FUT contracts found: 1
+2025-11-19 02:20:43 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 14, FUT contracts found: 2
+2025-11-19 02:20:43 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 14, FUT contracts found: 2
+2025-11-19 02:20:43 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 14, FUT contracts found: 2
+2025-11-19 02:20:43 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 1, FUT contracts found: 1
+2025-11-19 02:22:52 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 1, FUT contracts found: 1
+2025-11-19 04:14:21 | ERROR    | Error getting futures symbol and token: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/data/zerodha_futures_utils.py", line 318, in get_current_month_futures_symbol_and_token
+    instruments = kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:21 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:21 | ERROR    | Error getting futures symbol and token: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/data/zerodha_futures_utils.py", line 318, in get_current_month_futures_symbol_and_token
+    instruments = kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:21 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:21 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:21 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:21 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:21 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:25 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:25 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:27 | ERROR    | Error getting futures symbol and token: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/data/zerodha_futures_utils.py", line 318, in get_current_month_futures_symbol_and_token
+    instruments = kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:27 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:27 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:27 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:27 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:27 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:31 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:31 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:33 | ERROR    | Error getting futures symbol and token: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/data/zerodha_futures_utils.py", line 318, in get_current_month_futures_symbol_and_token
+    instruments = kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:33 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:33 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:33 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:33 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:33 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:37 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:37 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:39 | ERROR    | Error getting futures symbol and token: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/data/zerodha_futures_utils.py", line 318, in get_current_month_futures_symbol_and_token
+    instruments = kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:39 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:39 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:39 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:39 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:39 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:43 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:43 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:45 | ERROR    | Error getting futures symbol and token: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/data/zerodha_futures_utils.py", line 318, in get_current_month_futures_symbol_and_token
+    instruments = kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:45 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:45 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:45 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:45 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:45 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:49 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:49 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:51 | ERROR    | Error getting futures symbol and token: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/data/zerodha_futures_utils.py", line 318, in get_current_month_futures_symbol_and_token
+    instruments = kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:51 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:51 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:51 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:51 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:51 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:55 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:55 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:57 | ERROR    | Error getting futures symbol and token: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/data/zerodha_futures_utils.py", line 318, in get_current_month_futures_symbol_and_token
+    instruments = kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:57 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:57 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:57 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:57 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:14:57 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:15:01 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:15:01 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:15:03 | ERROR    | Error getting futures symbol and token: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/data/zerodha_futures_utils.py", line 318, in get_current_month_futures_symbol_and_token
+    instruments = kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:15:03 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:15:03 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:15:03 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:15:03 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:15:03 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:15:07 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:15:07 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:15:09 | ERROR    | Error getting futures symbol and token: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/data/zerodha_futures_utils.py", line 318, in get_current_month_futures_symbol_and_token
+    instruments = kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:15:09 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:15:09 | ERROR    | Error getting futures symbol and token: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/data/zerodha_futures_utils.py", line 318, in get_current_month_futures_symbol_and_token
+    instruments = kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:15:09 | ERROR    | Error refreshing option chain: 'MockKiteForOrders' object has no attribute 'instruments'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/option_chain_manager.py", line 67, in refresh_option_chain
+    instruments = self.kite.instruments("NFO")
+AttributeError: 'MockKiteForOrders' object has no attribute 'instruments'
+2025-11-19 04:18:11 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:18:11 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:18:17 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:18:23 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:18:29 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:18:35 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:18:41 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:18:47 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:18:53 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:18:59 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:18:59 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:21:33 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:21:33 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:21:39 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:21:45 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:21:51 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:21:57 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:22:03 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:22:09 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:24:41 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:24:47 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:24:53 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:25:05 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:25:11 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:25:17 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:25:23 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:25:36 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:25:36 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:25:42 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:25:42 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:33:36 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:33:36 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:33:37 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:33:39 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:33:40 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:33:41 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:33:42 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:33:42 | ERROR    | WebSocket error | code=1006 | reason=Connection lost
+2025-11-19 04:33:42 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:33:43 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:33:44 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:33:45 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:33:46 | ERROR    | Futures contract not found: BANKNIFTY25NOVFUT
+2025-11-19 04:34:58 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:34:58 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:34:59 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:01 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:02 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:03 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:04 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:04 | ERROR    | WebSocket error | code=1006 | reason=Connection lost
+2025-11-19 04:35:04 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:05 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:06 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:07 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:49 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:49 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:50 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:52 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:53 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:55 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:56 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:56 | ERROR    | WebSocket error | code=1006 | reason=Connection lost
+2025-11-19 04:35:56 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:57 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:58 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:35:59 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:39:24 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:39:24 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:39:24 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:39:30 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:39:36 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:39:42 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:39:48 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:40:00 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:40:06 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:40:18 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:41:31 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:41:31 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:41:31 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:41:37 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:41:43 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:41:50 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:41:56 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:42:08 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:42:14 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:42:26 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:43:27 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:43:27 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:43:27 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:43:33 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:43:40 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:43:46 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:43:52 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:44:04 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:44:10 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 04:44:23 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:14:34 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:14:40 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:14:57 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:15:04 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:18:50 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=56600.00 - Exiting position immediately
+2025-11-19 09:18:50 | CRITICAL | ⚠️ GAP UP DETECTED (SHORT): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=57400.00 - Exiting position immediately
+2025-11-19 09:18:50 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 501.00 points (0.88%) - Previous Close=57000.00, Today Open=56499.00 - Exiting position immediately
+2025-11-19 09:18:50 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=56600.00 - Exiting position immediately
+2025-11-19 09:18:50 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:18:50 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=56600.00 - Exiting position immediately
+2025-11-19 09:19:44 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=56600.00 - Exiting position immediately
+2025-11-19 09:19:44 | CRITICAL | ⚠️ GAP UP DETECTED (SHORT): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=57400.00 - Exiting position immediately
+2025-11-19 09:19:44 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 501.00 points (0.88%) - Previous Close=57000.00, Today Open=56499.00 - Exiting position immediately
+2025-11-19 09:19:44 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=56600.00 - Exiting position immediately
+2025-11-19 09:19:44 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:19:44 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=56600.00 - Exiting position immediately
+2025-11-19 09:20:05 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=56600.00 - Exiting position immediately
+2025-11-19 09:20:05 | CRITICAL | ⚠️ GAP UP DETECTED (SHORT): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=57400.00 - Exiting position immediately
+2025-11-19 09:20:05 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 501.00 points (0.88%) - Previous Close=57000.00, Today Open=56499.00 - Exiting position immediately
+2025-11-19 09:20:05 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=56600.00 - Exiting position immediately
+2025-11-19 09:20:05 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:20:05 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=56600.00 - Exiting position immediately
+2025-11-19 09:33:42 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:33:42 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:33:42 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:33:42 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:33:42 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:40:46 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:40:46 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:40:52 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:40:52 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=56600.00 - Exiting position immediately
+2025-11-19 09:40:52 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:41:11 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:41:11 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:41:11 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:41:17 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=56600.00 - Exiting position immediately
+2025-11-19 09:41:17 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:45:11 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:45:11 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:45:17 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:45:17 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=56600.00 - Exiting position immediately
+2025-11-19 09:45:17 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:45:36 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:45:36 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:45:36 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 09:45:42 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=56600.00 - Exiting position immediately
+2025-11-19 09:45:42 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:34:40 | ERROR    | WebSocket error | code=1006 | reason=connection was closed uncleanly (WebSocket closing handshake timeout (peer did not finish the opening handshake in time))
+2025-11-19 10:36:35 | ERROR    | Cannot enter LONG: No futures price available
+2025-11-19 10:49:35 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 1, FUT contracts found: 1
+2025-11-19 10:50:01 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:50:01 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:50:08 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:50:14 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:50:20 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:50:26 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:50:32 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:50:38 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:50:44 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:50:51 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:50:51 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:50:53 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:50:59 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:51:05 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:51:17 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:51:23 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:51:30 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:51:36 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:51:48 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:51:48 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:51:54 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:51:54 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:03 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:03 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:04 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:06 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:07 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:08 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:09 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:09 | ERROR    | WebSocket error | code=1006 | reason=Connection lost
+2025-11-19 10:52:09 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:10 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:11 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:12 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:17 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:17 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:17 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:23 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:29 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:36 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:42 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:52:54 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:53:00 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:53:12 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:53:22 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:53:28 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:53:30 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=56600.00 - Exiting position immediately
+2025-11-19 10:53:30 | CRITICAL | ⚠️ GAP UP DETECTED (SHORT): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=57400.00 - Exiting position immediately
+2025-11-19 10:53:30 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 501.00 points (0.88%) - Previous Close=57000.00, Today Open=56499.00 - Exiting position immediately
+2025-11-19 10:53:30 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=56600.00 - Exiting position immediately
+2025-11-19 10:53:30 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:53:30 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=56600.00 - Exiting position immediately
+2025-11-19 10:53:33 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:53:33 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:53:33 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:53:33 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:53:33 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:53:36 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:53:36 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:53:43 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:53:43 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=56600.00 - Exiting position immediately
+2025-11-19 10:53:43 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:54:01 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:54:01 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:54:01 | ERROR    | Error detecting data gaps: no such table: ohlcv_zerodha
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/recovery/system_recovery.py", line 130, in detect_data_gaps
+    cursor.execute(
+sqlite3.OperationalError: no such table: ohlcv_zerodha
+2025-11-19 10:54:01 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:54:07 | CRITICAL | ⚠️ GAP DOWN DETECTED (LONG): 400.00 points (0.70%) - Previous Close=57000.00, Today Open=56600.00 - Exiting position immediately
+2025-11-19 10:54:07 | ERROR    | No active BankNifty futures contracts found. Current date: 2025-11-19, Total BANKNIFTY instruments: 102, FUT contracts found: 0
+2025-11-19 10:54:30 | ERROR    | Cannot enter LONG: No futures price available
+2025-11-19 10:55:22 | ERROR    | WebSocket error | code=1006 | reason=connection was closed uncleanly (WebSocket closing handshake timeout (peer did not finish the opening handshake in time))
+2025-11-19 11:14:22 | ERROR    | Cannot enter LONG: No futures price available
+2025-11-19 11:15:16 | ERROR    | WebSocket error | code=1006 | reason=connection was closed uncleanly (WebSocket closing handshake timeout (peer did not finish the opening handshake in time))
+2025-11-19 11:17:26 | ERROR    | Cannot enter LONG: No futures price available
+2025-11-19 11:18:20 | ERROR    | WebSocket error | code=1006 | reason=connection was closed uncleanly (WebSocket closing handshake timeout (peer did not finish the opening handshake in time))
+2025-11-19 12:28:05 | ERROR    | Cannot enter LONG: No futures price available
+2025-11-19 12:28:59 | ERROR    | WebSocket error | code=1006 | reason=connection was closed uncleanly (WebSocket closing handshake timeout (peer did not finish the opening handshake in time))
+2025-11-19 12:29:44 | ERROR    | Cannot enter LONG: No futures price available
+2025-11-19 12:30:38 | ERROR    | WebSocket error | code=1006 | reason=connection was closed uncleanly (WebSocket closing handshake timeout (peer did not finish the opening handshake in time))
+2025-11-19 12:32:31 | ERROR    | Cannot enter LONG: No futures price available
+2025-11-19 12:33:25 | ERROR    | WebSocket error | code=1006 | reason=connection was closed uncleanly (WebSocket closing handshake timeout (peer did not finish the opening handshake in time))
+2025-11-19 12:34:48 | ERROR    | Cannot enter LONG: No futures price available
+2025-11-19 12:35:43 | ERROR    | WebSocket error | code=1006 | reason=connection was closed uncleanly (WebSocket closing handshake timeout (peer did not finish the opening handshake in time))
+2025-11-19 12:37:44 | ERROR    | Cannot enter LONG: No futures price available
+2025-11-19 12:38:39 | ERROR    | WebSocket error | code=1006 | reason=connection was closed uncleanly (WebSocket closing handshake timeout (peer did not finish the opening handshake in time))
+2025-11-19 12:40:09 | ERROR    | Cannot enter LONG: No futures price available
+2025-11-19 12:41:03 | ERROR    | WebSocket error | code=1006 | reason=connection was closed uncleanly (WebSocket closing handshake timeout (peer did not finish the opening handshake in time))
+2025-11-19 12:42:15 | ERROR    | Cannot enter LONG: No futures price available
+2025-11-19 12:43:09 | ERROR    | WebSocket error | code=1006 | reason=connection was closed uncleanly (WebSocket closing handshake timeout (peer did not finish the opening handshake in time))
+2025-11-19 19:01:49 | ERROR    | Failed to place order: BANKNIFTY25NOV59000CE | error=Your order could not be converted to a After Market Order (AMO).
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 986, in _place_market_order
+    order_id = self.kite.place_order(
+  File "/opt/anaconda3/envs/banknifty_trading/lib/python3.10/site-packages/kiteconnect/connect.py", line 361, in place_order
+    return self._post("order.place",
+  File "/opt/anaconda3/envs/banknifty_trading/lib/python3.10/site-packages/kiteconnect/connect.py", line 865, in _post
+    return self._request(route, "POST", url_args=url_args, params=params, is_json=is_json, query_params=query_params)
+  File "/opt/anaconda3/envs/banknifty_trading/lib/python3.10/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.InputException: Your order could not be converted to a After Market Order (AMO).
+2025-11-19 19:14:26 | ERROR    | Failed to place order: BANKNIFTY25NOV59000CE | error='OrderManager' object has no attribute '_should_slice_order'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 1025, in _place_market_order
+    should_slice, freeze_limit = self._should_slice_order(quantity, symbol)
+AttributeError: 'OrderManager' object has no attribute '_should_slice_order'
+2025-11-19 19:15:23 | ERROR    | Failed to place order: BANKNIFTY25NOV59000CE | error='OrderManager' object has no attribute '_get_freeze_limit'
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 1026, in _place_market_order
+    freeze_limit = self._get_freeze_limit(symbol)
+AttributeError: 'OrderManager' object has no attribute '_get_freeze_limit'
+2025-11-19 19:16:07 | ERROR    | Failed to place order: BANKNIFTY25NOV59000CE | error=Market orders are blocked for index options using after market orders(AMO). Try placing a LIMIT order.
+Traceback (most recent call last):
+  File "/Users/rohan/Downloads/Vridhi_Capital_Trading_System/src/trading_system/oms/order_manager.py", line 1103, in _place_market_order
+    order_id = self.kite.place_order(**order_params)
+  File "/opt/anaconda3/envs/banknifty_trading/lib/python3.10/site-packages/kiteconnect/connect.py", line 361, in place_order
+    return self._post("order.place",
+  File "/opt/anaconda3/envs/banknifty_trading/lib/python3.10/site-packages/kiteconnect/connect.py", line 865, in _post
+    return self._request(route, "POST", url_args=url_args, params=params, is_json=is_json, query_params=query_params)
+  File "/opt/anaconda3/envs/banknifty_trading/lib/python3.10/site-packages/kiteconnect/connect.py", line 937, in _request
+    raise exp(data["message"], code=r.status_code)
+kiteconnect.exceptions.InputException: Market orders are blocked for index options using after market orders(AMO). Try placing a LIMIT order.

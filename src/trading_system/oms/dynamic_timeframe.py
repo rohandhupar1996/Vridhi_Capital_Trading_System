@@ -18,23 +18,6 @@ from ..logging import ComponentLogger
 Timeframe = Literal["1min", "3min", "5min", "10min", "15min", "30min", "1hour"]
 
 
-def _last_thursday(year: int, month: int) -> date:
-    """
-    Compute the last Thursday of a given month.
-    Note: This ignores exchange holiday shifts; production users can extend this
-    by injecting an exchange calendar if needed.
-    """
-    # Start from last day of month, walk backwards to Thursday (weekday 3)
-    if month == 12:
-        next_month = date(year + 1, 1, 1)
-    else:
-        next_month = date(year, month + 1, 1)
-    last_day = next_month - timedelta(days=1)
-    # Python weekday: Monday=0 ... Sunday=6; Thursday=3
-    offset = (last_day.weekday() - 3) % 7
-    return last_day - timedelta(days=offset)
-
-
 @dataclass(slots=True)
 class DynamicTimeframeConfig:
     """
@@ -48,7 +31,8 @@ class DynamicTimeframeConfig:
 class DynamicTimeframeController:
     """
     Determines the effective timeframe for the current day based on monthly expiry.
-    Can use actual expiry from Zerodha instruments or calculated last Thursday.
+    Uses actual expiry from Zerodha option chain (SOURCE OF TRUTH).
+    NO FALLBACKS - If option chain data unavailable, returns base timeframe.
     """
 
     def __init__(
@@ -64,9 +48,12 @@ class DynamicTimeframeController:
 
     def _get_actual_expiry_date(self, dt: datetime) -> Optional[date]:
         """
-        Get actual current expiry date from Zerodha instruments dynamically.
-        Gets the nearest (current) expiry, not just current month - handles expiry transitions.
-        Returns None if not available, falls back to calculated last Thursday.
+        Get actual current expiry date from Zerodha option chain (SOURCE OF TRUTH).
+        Gets expiry from BANKNIFTY CE/PE options - this is the actual expiry date.
+        Monthly options and futures expire on SAME DATE.
+        
+        IMPORTANT: NO FALLBACKS - Returns None if option chain data unavailable.
+        Option chain is the ONLY source of truth for expiry dates.
         """
         if not self.kite:
             return None
@@ -120,7 +107,10 @@ class DynamicTimeframeController:
     def is_expiry_day(self, dt: datetime) -> bool:
         """
         Return True if dt falls on the monthly expiry date.
-        Uses actual expiry from Zerodha if available, otherwise calculates last Thursday.
+        Uses actual expiry from Zerodha option chain (SOURCE OF TRUTH).
+        
+        IMPORTANT: NO FALLBACKS - If option chain data unavailable, returns False.
+        Option chain is the ONLY source of truth for expiry dates.
         """
         if not self.config.enable_expiry_switch:
             return False
@@ -129,16 +119,18 @@ class DynamicTimeframeController:
         if self._cached_expiry_date and dt.date() == self._cached_expiry_date:
             return True
         
-        # Try to get actual expiry from Zerodha
+        # Get actual expiry from Zerodha option chain (ONLY SOURCE OF TRUTH)
         actual_expiry = self._get_actual_expiry_date(dt)
         if actual_expiry:
             self._cached_expiry_date = actual_expiry
             return dt.date() == actual_expiry
         
-        # Fallback to calculated last Thursday
-        expiry = _last_thursday(dt.year, dt.month)
-        self._cached_expiry_date = expiry
-        return dt.date() == expiry
+        # NO FALLBACK - If option chain unavailable, cannot determine expiry
+        self.logger.warning(
+            f"Cannot determine expiry day: Option chain data unavailable",
+            date=dt.date().isoformat()
+        )
+        return False
 
     def get_effective_timeframe(self, now: Optional[datetime] = None) -> Timeframe:
         """
