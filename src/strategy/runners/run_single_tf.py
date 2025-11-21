@@ -17,8 +17,10 @@ for path in (PROJECT_ROOT, SRC_PATH):
     if str(path) not in sys.path:
         sys.path.insert(0, str(path))
 
-from src.trading_system.backtest import SingleTimeframeBacktester
-from src.trading_system.config import AppConfig
+from src.strategy.backtest.single_tf_adapter import (
+    SingleTimeframeBacktester,
+    BacktestConfig,
+)
 
 
 def _print_detailed_summary(metrics: dict, trades: List) -> None:
@@ -129,13 +131,11 @@ def _print_detailed_summary(metrics: dict, trades: List) -> None:
 
 if __name__ == "__main__":
     import sys
-    
-    app_config = AppConfig()
-    
+
     # Parse arguments
     use_zerodha = "--zerodha" in sys.argv
     exit_mode = None
-    
+
     # Check for exit mode arguments
     if "--volume-both" in sys.argv:
         exit_mode = "volume_both"
@@ -145,25 +145,32 @@ if __name__ == "__main__":
         exit_mode = "volume_short"
     elif "--default" in sys.argv:
         exit_mode = "default"
-    
+
+    # Build isolated backtest config (no AppConfig / live-trading coupling)
+    config = BacktestConfig()
+
+    # Zerodha vs TradingView switch
     if use_zerodha:
-        # Override config for Zerodha data
-        app_config.backtest.table_name = "ohlcv_zerodha"
-        app_config.backtest.symbol = "BANKNIFTY25NOVFUT"  # Will be dynamically set
-        app_config.backtest.timeframe = "15min"
-        print(f"🔷 Using Zerodha data: {app_config.backtest.table_name}")
-        print(f"   Symbol: {app_config.backtest.symbol}")
-        print(f"   Timeframe: {app_config.backtest.timeframe}\n")
-    
+        config.table_name = "ohlcv_zerodha"
+        config.symbol = "BANKNIFTY25NOVFUT"  # Will be dynamically set by data loader
+        config.timeframe = "15min"
+        print(f"🔷 Using Zerodha data: {config.table_name}")
+        print(f"   Symbol: {config.symbol}")
+        print(f"   Timeframe: {config.timeframe}\n")
+
+    # Exit mode selection
     if exit_mode:
-        app_config.backtest.exit_mode = exit_mode
+        config.exit_mode = exit_mode
         print(f"🔷 Exit mode: {exit_mode}")
-        if exit_mode in ['volume_both', 'volume_long', 'volume_short']:
-            print(f"   Volume lookback: {app_config.backtest.volume_exit_lookback} bars\n")
+        if exit_mode in ["volume_both", "volume_long", "volume_short"]:
+            print(f"   Volume lookback: {config.volume_exit_lookback} bars\n")
+
+    # Resolve DB path in an isolated way
+    db_path = PROJECT_ROOT / "data" / "banknifty_data.db"
 
     backtester = SingleTimeframeBacktester(
-        config=app_config.backtest,
-        db_path=app_config.resolve_path(app_config.data.db_path),
+        config=config,
+        db_path=db_path,
     )
     results = backtester.run()
 
