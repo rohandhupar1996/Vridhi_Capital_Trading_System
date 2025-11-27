@@ -1,2 +1,0 @@
-2025-11-20 20:32:41 | INFO     | [trading_system.zerodha_historical] Generated login URL: https://kite.zerodha.com/connect/login?api_key=t2z5newnxxa7nkhs&v=3&redirect_url=http://localhost:8080
-2025-11-20 20:32:47 | INFO     | [trading_system.zerodha_historical] ✅ Login successful!

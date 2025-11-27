@@ -1,130 +1,189 @@
-# Vridhi Capital Trading System
+# BankNifty Trading System
 
-Comprehensive trading system for BankNifty options with ML-based signal generation and automated order management.
+Modular trading system for BankNifty options with TradingView webhook integration and OpenAlgo execution.
 
-## Components
+## Structure
 
-### 1. Order Management System (OMS)
-**Location**: `src/trading_system/oms/`
+```
+Vridhi_Capital_Trading_System/
+├── app.py                      # Main application entry point
+├── config.py                   # Configuration settings
+├── requirements.txt
+├── README.md
+└── src/
+    ├── openalgo_client.py      # OpenAlgo API wrapper
+    ├── order_manager.py        # Order placement & verification
+    ├── position_executor.py    # Position execution logic
+    ├── telegram_notifier.py    # Telegram notifications
+    └── webhook_handler.py      # Flask webhook endpoints
+```
 
-Complete order management system for BankNifty options trading with:
-- **NRML Market Orders**: All orders use NRML product type with MARKET execution
-- **BUY-First Sequence**: BUY orders execute first, then SELL orders to prevent margin issues
-- **Margin Management**: Pre-calculation and real-time margin checking
-- **Sequential Lot Reduction**: Automatically reduces lot size if margin issues occur
-- **Fast Execution**: Pre-calculated margins enable instant execution at 9:15 AM
-- **All-Leg Execution**: Exit and SL execute all legs together simultaneously
+## Features
 
-**Strategy**:
-- **LONG**: SELL ATM PUT (PE) + BUY ATM CALL (CE) + BUY 20 legs away PUT (PE) for margin
-- **SHORT**: SELL ATM CALL (CE) + BUY ATM PUT (PE) + BUY 20 legs away CALL (CE) for margin
+✅ **Parallel BUY Execution** - BUY orders execute simultaneously  
+✅ **Sequential SELL Execution** - SELL only after BUY confirmation  
+✅ **Order Verification** - Polls until order completion  
+✅ **TradingView Integration** - Webhook endpoint for alerts  
+✅ **OpenAlgo Integration** - Broker-agnostic execution  
+✅ **Safety Checks** - Prevents naked SELL positions  
+✅ **Telegram Alerts** - Real-time notifications for signals, executions, and P&L  
 
-**Key Features**:
-- 8 lots of BankNifty (configurable)
-- 20 legs away hedge for margin requirements
-- Handles partial fills gracefully
-- Complete position tracking and state management
+## Installation
 
-See `src/trading_system/oms/` for detailed code documentation.
-
-### 2. Trading Strategy
-**Location**: `src/strategy/core/`
-
-ML-based trading system using Lorentzian Classification with:
-- Dual timeframe analysis
-- Kernel filtering
-- Volume node detection
-- Re-entry logic
-
-### 3. Broker Integration
-**Location**: `src/trading_system/broker/`
-
-Zerodha KiteConnect integration with:
-- Automated authentication
-- Connection monitoring
-- Token management
-- Health checks
-
-## Quick Start
-
-### Setup
-1. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Configure credentials in `configs/.env`:
-```
-ZERODHA_API_KEY=your_api_key
-ZERODHA_API_SECRET=your_api_secret
-```
-
-3. Update `configs/config.yaml` with your trading parameters
-
-### Using OMS
-
-```python
-from src.trading_system.oms import OrderManager
-from src.trading_system.broker import ZerodhaAuthenticator, ZerodhaCredentials
-
-# Authenticate
-credentials = ZerodhaCredentials(api_key="...", api_secret="...")
-authenticator = ZerodhaAuthenticator(credentials=credentials)
-authenticator.login()
-
-# Initialize OMS
-oms = OrderManager(
-    kite=authenticator.get_kite_instance(),
-    lot_size=8,
-    hedge_legs=20
-)
-
-# Pre-calculate margins (before market opens)
-oms.futures_ltp = get_futures_price()
-oms.pre_calculate_margins()
-
-# Handle signals
-if signal == 'LONG':
-    oms.enter_long(fast_execution=True)
-elif signal == 'SHORT':
-    oms.enter_short(fast_execution=True)
-elif signal == 'EXIT':
-    oms.exit_position()
-elif signal == 'SL':
-    oms.execute_stop_loss()
-```
-
-See `src/trading_system/oms/example_usage.py` for complete integration example.
-
 ## Configuration
 
-Edit `configs/config.yaml` to customize:
-- Lot size (default: 8)
-- Hedge legs (default: 20)
-- Order execution settings
-- Margin management options
+Edit `config.py`:
 
-## Documentation
+```python
+# OpenAlgo Configuration
+OPENALGO_CONFIG = {
+    "api_key": "your_api_key_here",  # ⚠️ CHANGE THIS
+    "host": "http://127.0.0.1:5000"
+}
 
-- **Example Usage**: `src/trading_system/oms/example_usage.py`
-- **Main Trading Script**: `scripts/simple_trading.py`
+# Telegram Configuration
+TELEGRAM_CONFIG = {
+    "enabled": True,  # Set to False to disable
+    "username": "your_openalgo_username",  # ⚠️ CHANGE THIS
+    "send_signal_alerts": True,
+    "send_execution_alerts": True,
+    "send_pnl_updates": True,
+    "pnl_update_interval": 3600,  # 1 hour
+    "market_hours_only": True,  # 9:15 AM - 3:30 PM
+}
 
-## Features
+# Trading Configuration
+CONFIG = {
+    "underlying": "BANKNIFTY",
+    "lot_size": 15,
+    "product": "NRML",
+    "strategy_name": "ML_BANKNIFTY",
+}
+```
 
-✅ NRML Market Orders  
-✅ BUY-first execution sequence  
-✅ Margin calculation and management  
-✅ Sequential lot reduction on margin issues  
-✅ Fast execution for early morning signals  
-✅ All-leg exit and SL execution  
-✅ Complete position tracking  
-✅ Comprehensive logging  
-✅ Error handling and recovery  
+## Usage
 
-## Production Notes
+### Start Server
 
-- Pre-calculate margins before market opens for fastest execution
-- Monitor margin availability throughout the day
-- All orders use NRML product type (required for options)
-- Partial fills are handled gracefully
-- Complete audit trail via logging
+```bash
+python app.py
+```
+
+Server runs on `http://0.0.0.0:5001`
+
+### Endpoints
+
+**TradingView Webhook:**
+```
+POST /webhook
+Body: {"signal": "LONG" | "SHORT" | "EXIT" | "NONE"}
+```
+
+**Health Check:**
+```
+GET /health
+```
+
+**Get Positions:**
+```
+GET /positions
+```
+
+**Close All Positions:**
+```
+POST /close
+```
+
+**Get P&L (sends to Telegram):**
+```
+GET /pnl
+```
+
+**Test Execution:**
+```
+POST /test/long
+POST /test/short
+```
+
+## TradingView Setup
+
+1. Create alert in TradingView
+2. Set webhook URL: `http://your-server:5001/webhook`
+3. Set message:
+```json
+{"signal": "{{strategy.order.action}}"}
+```
+
+Replace `{{strategy.order.action}}` with:
+- `LONG` - Enter long position
+- `SHORT` - Enter short position
+- `EXIT` - Close all positions
+
+## Position Logic
+
+### LONG Position
+1. BUY ATM CE (parallel)
+2. BUY OTM20 PE (parallel)
+3. Wait for both BUYs to complete
+4. SELL ATM PE (sequential)
+
+### SHORT Position
+1. BUY ATM PE (parallel)
+2. BUY OTM20 CE (parallel)
+3. Wait for both BUYs to complete
+4. SELL ATM CE (sequential)
+
+**Execution Time:** ~3-5 seconds
+
+## Safety Features
+
+- ✅ BUY orders execute first (parallel)
+- ✅ SELL only after BUY confirmation
+- ✅ Order status polling until completion
+- ✅ Prevents naked SELL positions
+- ✅ Comprehensive error logging
+
+## Telegram Alerts
+
+### Signal Alerts
+```
+🟢 LONG Signal Received!
+📅 Expiry: 30-DEC-25
+```
+
+### Execution Success
+```
+🎯 LONG Position COMPLETE!
+━━━━━━━━━━━━━━━━━━
+⏱ Execution: 4.23s
+📅 Expiry: 30-DEC-25
+
+📥 BUY Orders:
+  • BANKNIFTY30DEC2551000CE
+  • BANKNIFTY30DEC2550000PE
+
+📤 SELL Order:
+  • BANKNIFTY30DEC2551000PE
+
+💰 Check /pnl for P&L
+```
+
+### P&L Updates (Hourly during market hours)
+```
+📊 Current Positions P&L
+━━━━━━━━━━━━━━━━━━
+🟢 BANKNIFTY30DEC2551000CE: ₹+350.00
+🔴 BANKNIFTY30DEC2550000PE: ₹-120.00
+🟢 BANKNIFTY30DEC2551000PE: ₹+280.00
+━━━━━━━━━━━━━━━━━━
+💚 Total P&L: ₹+510.00
+🕐 02:30 PM
+```
+
+## License
+
+MIT
