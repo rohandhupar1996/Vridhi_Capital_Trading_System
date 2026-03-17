@@ -1,0 +1,8 @@
+// Lorentzian Strategy script by [Your Name]
+
+//@version=5
+indicator("Lorentzian Strategy", overlay=true)
+
+// Define your Lorentzian strategy parameters, signals and logic here
+
+plot(close) // Placeholder for plotting
